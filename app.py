@@ -32,7 +32,6 @@ def welcome():
     try:
         g.db = sqlite3.connect('CACTESFinance2017.db')
         g.db.row_factory = sqlite3.Row
-        print "Connect to the database successfuly!"
         cur = g.db.execute('select * from Finance')
         rows = cur.fetchall()
         g.db.close()
@@ -56,7 +55,6 @@ def addTranscation():
             expense = request.form['expense']
 
             g.db = sqlite3.connect('CACTESFinance2017.db')
-            print "Connect to the database successfuly!"
 
             #auto update the balance
             cur = g.db.execute('SELECT Max(TranscationID), Balance FROM Finance')
@@ -72,7 +70,6 @@ def addTranscation():
 
         except sqlite3.OperationalError:
             error = "Fail to insert new data"
-            print "Failed"
 
 
     return render_template('addTranscation.html', error=error)
@@ -83,8 +80,6 @@ def addTranscation():
 def login():
     error = None
     if request.method == 'POST':
-        print "login post received"
-
         if request.form['password'] == 'password' and request.form['username'] == 'admin':
             session['logged_in'] = True
             return redirect(url_for('welcome'))
