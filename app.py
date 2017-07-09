@@ -5,7 +5,7 @@ import sqlite3
 
 app = Flask(__name__)
 
-app.database = "sample.db"
+username = ""
 
 #login required decorator
 def login_required(f):
@@ -18,29 +18,73 @@ def login_required(f):
             return redirect(url_for('login'))
     return wrap
 
+
+
 @app.route('/')
 def home():
     return render_template('index.html')
 
+
+
 @app.route('/welcome')
 @login_required
 def welcome():
-    posts = []
     try:
-        g.db = connect_db()
-        cur = g.db.execute('select * from posts')
-        posts = [dict(title=row[0], description=row[1]) for row in cur.fetchall()]
+        g.db = sqlite3.connect('CACTESFinance2017.db')
+        g.db.row_factory = sqlite3.Row
+        print "Connect to the database successfuly!"
+        cur = g.db.execute('select * from Finance')
+        rows = cur.fetchall()
         g.db.close()
+
     except sqlite3.OperationalError:
         flash("You have no database")
-        
-    username = 'admin'
-    return render_template('welcome.html', username=username, posts=posts)
+
+    username = "admin"
+    return render_template('welcome.html', user=username, rows=rows)
+
+
+@app.route('/addTranscation', methods=['GET', 'POST'])
+def addTranscation():
+    error = None
+    if request.method == 'POST':
+        try:
+            date = request.form['date']
+            staff = request.form['staff']
+            event = request.form['event']
+            income = request.form['income']
+            expense = request.form['expense']
+
+            g.db = sqlite3.connect('CACTESFinance2017.db')
+            print "Connect to the database successfuly!"
+
+            #auto update the balance
+            cur = g.db.execute('SELECT Max(TranscationID), Balance FROM Finance')
+            for row in cur.fetchall():
+                balance = row[1]
+            balance = int(balance) + int(income) - int(expense)
+            
+            cur = g.db.execute('INSERT INTO Finance (Date,Staff_Position,Event,Income,Expense,Balance) VALUES (?,?,?,?,?,?)',(date,staff,event,income,expense,balance))
+            g.db.commit()
+            g.db.close()
+            error = "Record successfully added!"
+            return redirect(url_for('welcome'))
+
+        except sqlite3.OperationalError:
+            error = "Fail to insert new data"
+            print "Failed"
+
+
+    return render_template('addTranscation.html', error=error)
+
+
 
 @app.route('/login', methods=['GET','POST'])
 def login():
     error = None
     if request.method == 'POST':
+        print "login post received"
+
         if request.form['password'] == 'password' and request.form['username'] == 'admin':
             session['logged_in'] = True
             return redirect(url_for('welcome'))
@@ -48,15 +92,22 @@ def login():
             error = 'Invalid credentials. Please try again.'
     return render_template('login.html', error=error)
 
+
+
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
     flash('You have just logged out')
     return redirect(url_for('home'))
 
+
+
 @app.route('/showSignUp')
 def showSignUp():
     return render_template('signup.html')
+
+
+
 
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -65,9 +116,6 @@ def signup():
     email = request.form['inputEmail']
     password = request.form['inputPassword']
 
-
-def connect_db():
-    return sqlite3.connect(app.database)
 
 
 if __name__ == "__main__":
