@@ -30,7 +30,7 @@ def home():
 @login_required
 def welcome():
     try:
-        g.db = sqlite3.connect('CACTESFinance2017.db')
+        g.db = sqlite3.connect('CACTES.db')
         g.db.row_factory = sqlite3.Row
         cur = g.db.execute('select * from Finance')
         rows = cur.fetchall()
@@ -54,7 +54,7 @@ def addTranscation():
             income = request.form['income']
             expense = request.form['expense']
 
-            g.db = sqlite3.connect('CACTESFinance2017.db')
+            g.db = sqlite3.connect('CACTES.db')
 
             #auto update the balance
             cur = g.db.execute('SELECT Max(TranscationID), Balance FROM Finance')
@@ -76,16 +76,63 @@ def addTranscation():
 
 
 
-@app.route('/login', methods=['GET','POST'])
-def login():
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+#Hash the password!!
+
     error = None
     if request.method == 'POST':
-        if request.form['password'] == 'password' and request.form['username'] == 'admin':
-            session['logged_in'] = True
-            return redirect(url_for('welcome'))
-        else:
-            error = 'Invalid credentials. Please try again.'
+        try:
+            fname = request.form['fname']
+            lname = request.form['lname']
+            username = request.form['username']
+            password = request.form['password']
+            school = request.form['school']
+            email = request.form['email']
+            position = request.form['position']
+
+            g.db = sqlite3.connect('CACTES.db')
+            
+            cur = g.db.execute('INSERT INTO Staff (FirstName,LastName,Username,Password,School,Email,Position) VALUES (?,?,?,?,?,?,?)',(fname,lname,username,password,school,email,position))
+            g.db.commit()
+            g.db.close()
+            error = "Sign up successfully!"
+            return redirect(url_for('login'))
+
+        except sqlite3.OperationalError:
+            error = "Fail to sign up."
+
+    return render_template('signup.html', error=error)
+
+
+
+@app.route('/login', methods=['GET','POST'])
+def login():
+#Hash the password!!
+
+    error = None
+    if request.method == 'POST':
+        try:
+            username = request.form['username']
+
+            g.db = sqlite3.connect('CACTES.db')
+            cur = g.db.execute("SELECT Password FROM Staff WHERE Username='{}'".format(username))
+            for row in cur.fetchall():
+                password = row[0]
+            
+            g.db.close()
+
+            if request.form['password'] == password:
+                session['logged_in'] = True
+                return redirect(url_for('welcome'))
+            else:
+                error = 'Invalid credentials. Please try again.'
+
+        except sqlite3.OperationalError:
+            error = "Fail to log in."
+
     return render_template('login.html', error=error)
+
 
 
 
@@ -95,21 +142,6 @@ def logout():
     flash('You have just logged out')
     return redirect(url_for('home'))
 
-
-
-@app.route('/showSignUp')
-def showSignUp():
-    return render_template('signup.html')
-
-
-
-
-@app.route('/signup', methods=['POST'])
-def signup():
-    fname = request.form['inputfName']
-    lname = request.form['inputlName']
-    email = request.form['inputEmail']
-    password = request.form['inputPassword']
 
 
 

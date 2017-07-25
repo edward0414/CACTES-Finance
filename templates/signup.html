@@ -6,25 +6,27 @@
       <ul class="nav nav-pills pull-right">
         <li role="presentation" ><a href="/">Home</a></li>
         <li role="presentation"><a href="/login">Log In</a></li>
-        <li role="presentation" class="active"><a href="/showSignUp">Sign Up</a></li>
+        <li role="presentation" class="active"><a href="/signup">Sign Up</a></li>
       </ul>
     </nav>
     <h3 class="text-muted">CACTES Association</h3>
     </div>
+    
+    {% if error %}
+        <p class="error"><strong>Error:</strong> {{ error }}</p>
+    {% endif %}
 
     <div class="jumbotron">
     <h1>CACTES Staff</h1>
-    <form class="form-signin">
-        <label for="inputfName" class="sr-only">First Name</label>
-        <input type="fname" name="inputfName" id="inputfName" class="form-control" placeholder="First Name" required autofocus>
-        <label for="inputlName" class="sr-only">Last Name</label>
-        <input type="lname" name="inputlName" id="inputlName" class="form-control" placeholder="Last Name" required autofocus>
-        <label for="inputEmail" class="sr-only">Email address</label>
-        <input type="email" name="inputEmail" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
-        <label for="inputPassword" class="sr-only">Password</label>
-        <input type="password" name="inputPassword" id="inputPassword" class="form-control" placeholder="Password" required>
-
-        <button id="btnSignUp" class="btn btn-lg btn-primary btn-block" type="button">Sign up</button>
+    <form class="form-signin" action="" method="post">
+        <input type="text" placeholder="First Name" name="fname" class="form-control"  value="{{request.form.fname }}" required autofocus>
+        <input type="text" placeholder="Last Name" name="lname" class="form-control"  value="{{request.form.lname }}" required autofocus>
+        <input type="text" placeholder="Username" name="username" class="form-control"  value="{{request.form.username }}" required autofocus>
+        <input type="text" placeholder="Password" name="password" class="form-control"  value="{{request.form.password }}" required autofocus>
+        <input type="text" placeholder="School" name="school" class="form-control"  value="{{request.form.school }}" required autofocus>
+        <input type="text" placeholder="Email" name="email" class="form-control"  value="{{request.form.email }}" required autofocus>
+        <input type="text" placeholder="Position" name="position" class="form-control"  value="{{request.form.position }}" required autofocus>
+        <input class="btn btn-lg btn-primary btn-block" type="submit" value="Submit">
     </form>
 </div>
  
