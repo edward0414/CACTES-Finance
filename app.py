@@ -44,8 +44,8 @@ def welcome():
     return render_template('welcome.html', user=username, rows=rows)
 
 
-@app.route('/addTranscation', methods=['GET', 'POST'])
-def addTranscation():
+@app.route('/addTransaction', methods=['GET', 'POST'])
+def addTransaction():
     error = None
     if request.method == 'POST':
         try:
@@ -58,12 +58,12 @@ def addTranscation():
             g.db = sqlite3.connect('CACTES.db')
 
             #auto update the balance
-            cur = g.db.execute('SELECT Max(TranscationID), Balance FROM Finance')
+            cur = g.db.execute('SELECT Max(TransactionID), Balance FROM Finance')
             for row in cur.fetchall():
                 balance = row[1]
             balance = int(balance) + int(income) - int(expense)
             
-            cur = g.db.execute('INSERT INTO Finance (Date,Staff_Position,Event,Income,Expense,Balance) VALUES (?,?,?,?,?,?)',(date,staff,event,income,expense,balance))
+            cur = g.db.execute('INSERT INTO Finance (Date,Person_Responsible,Event,Income,Expense,Balance) VALUES (?,?,?,?,?,?)',(date,staff,event,income,expense,balance))
             g.db.commit()
             g.db.close()
             error = "Record successfully added!"
@@ -73,7 +73,62 @@ def addTranscation():
             error = "Fail to insert new data"
 
 
-    return render_template('addTranscation.html', error=error)
+    return render_template('addTransaction.html', error=error)
+
+
+@app.route('/modifyTransaction', methods=['GET', 'POST'])
+def modifyTransaction():
+    error = None
+    try:
+        g.db = sqlite3.connect('CACTES.db')
+        g.db.row_factory = sqlite3.Row
+        cur = g.db.execute('SELECT * FROM Finance')
+        rows = cur.fetchall()
+        g.db.close()
+
+    except sqlite3.OperationalError:
+        error = "Fail to show the database"
+
+    if request.method == 'POST':
+        try:
+            transactionID = request.form['transactionID']
+            date = request.form['date']
+            staff = request.form['staff']
+            event = request.form['event']
+            income = request.form['income']
+            expense = request.form['expense']
+
+            g.db = sqlite3.connect('CACTES.db')
+
+            #auto update the balance
+            cur = g.db.execute('SELECT Balance FROM Finance WHERE TransactionID=?', (int(transactionID)-1,))
+            for row in cur.fetchall():
+                balance = row[0]
+            balance = int(balance) + int(income) - int(expense)
+            
+            #calculate the difference between the updated balance and the original balance
+            cur = g.db.execute('SELECT Balance FROM Finance WHERE TransactionID=?', (transactionID,))
+            for row in cur.fetchall():
+                temp = row[0]
+            diff = int(temp) - balance
+
+            #Update this transaction
+            cur = g.db.execute('UPDATE Finance SET Date=?,Person_Responsible=?,Event=?,Income=?,Expense=?,Balance=? WHERE TransactionID=?',(date,staff,event,income,expense,balance,transactionID))
+
+            #Update the balance of every other transactions
+            cur = g.db.execute('UPDATE Finance SET Balance=Balance-? WHERE TransactionID>?', (diff,transactionID))
+            
+
+            g.db.commit()
+            g.db.close()
+            error = "Record successfully added!"
+            return redirect(url_for('welcome'))
+
+        except sqlite3.OperationalError:
+            error = "Fail to modify data"
+
+
+    return render_template('modifyTransaction.html', error=error, rows=rows)
 
 
 

@@ -19,9 +19,9 @@
 <div class="jumbotron">
     <h1>CACTES Finance</h1>
     <p class="lead"></p>
-    <p><a class="btn btn-lg btn-success" href="/addTranscation" role="button">Add New Data</a>
+    <p><a class="btn btn-lg btn-success" href="/addTransaction" role="button">Add New Data</a>
     </p>
-    <p><a class="btn btn-lg btn-success" href="/showSignUp" role="button">Modify Data</a>
+    <p><a class="btn btn-lg btn-success" href="/modifyTransaction" role="button">Modify Data</a>
     </p>
 </div>
 
@@ -30,9 +30,9 @@
         
         <table class="pure-table pure-table-horizontal">
          <thead>
-            <td>TranscationID</td>
+            <td>TransactionID</td>
             <td>Date</td>
-            <td>Staff_Position</td>
+            <td>Person Responsible</td>
             <td>Event</td>
             <td>Income</td>
             <td>Expense</td>
@@ -41,13 +41,13 @@
          
          {% for row in rows %}
             <tr>
-               <td>{{row["TranscationID"]}}</td>
+               <td>{{row["TransactionID"]}}</td>
                <td>{{row["Date"]}}</td>
-               <td> {{row["Staff_Position"]}}</td>
+               <td> {{row["Person_Responsible"]}}</td>
                <td>{{row["Event"]}}</td>
                <td>{{row["Income"]}}</td>
                <td> {{row["Expense"]}}</td>
-               <td>{{row["Balance"]}}</td>	
+               <td>{{row["Balance"]}}</td>
             </tr>
          {% endfor %}
       </table>

@@ -5,8 +5,8 @@
     <nav>
       <ul class="nav nav-pills pull-right">
         <li role="presentation"><a href="/welcome">Home</a></li>
-        <li role="presentation" class="active"><a href="/addTranscation">Add New Data</a></li>
-        <li role="presentation"><a href="/modifyTranscation">Modify Data</a></li>
+        <li role="presentation" class="active"><a href="/addTransaction">Add New Data</a></li>
+        <li role="presentation"><a href="/modifyTransaction">Modify Data</a></li>
         <li role="presentation"><a href="/logout">Log Out</a></li>
       </ul>
     </nav>
@@ -17,10 +17,10 @@
         <p class="error"><strong>Error:</strong> {{ error }}</p>
     {% endif %}
     <div class="jumbotron">
-    <h1>Add New Transcation</h1>
+    <h1>Add New Data</h1>
     <form class="form-signin" action="" method="post">
         <input type="text" placeholder="Date  ex. July 9, 2017" name="date" class="form-control"  value="{{request.form.date }}" required autofocus>
-        <input type="text" placeholder="Staff_Position  ex. Treasurer" name="staff" class="form-control"  value="{{request.form.staff }}" required autofocus>
+        <input type="text" placeholder="Person Responsible" name="staff" class="form-control"  value="{{request.form.staff }}" required autofocus>
         <input type="text" placeholder="Event  ex. Fundraising" name="event" class="form-control"  value="{{request.form.event }}" required autofocus>
         <input type="integer" placeholder="Income" name="income" class="form-control"  value="{{request.form.income }}" required autofocus>
         <input type="integer" placeholder="Expense" name="expense" class="form-control"  value="{{request.form.expense }}" required autofocus>

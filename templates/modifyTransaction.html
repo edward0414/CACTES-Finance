@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="header">
+    <nav>
+      <ul class="nav nav-pills pull-right">
+        <li role="presentation"><a href="/welcome">Home</a></li>
+        <li role="presentation"><a href="/addTransaction">Add New Data</a></li>
+        <li role="presentation" class="active"><a href="/modifyTransaction">Modify Data</a></li>
+        <li role="presentation"><a href="/logout">Log Out</a></li>
+      </ul>
+    </nav>
+    <h3 class="text-muted">CACTES Association</h3>
+</div>
+
+    {% if error %}
+        <p class="error"><strong>Error:</strong> {{ error }}</p>
+    {% endif %}
+<div class="jumbotron">
+    <h1>Modify Data</h1>
+    <form class="form-signin" action="" method="post">
+        <input type="integer" placeholder="TransactionID" name="transactionID" class="form-control"  value="{{request.form.transactionID }}" required autofocus>
+        <input type="text" placeholder="Date  ex. July 9, 2017" name="date" class="form-control"  value="{{request.form.date }}" required autofocus>
+        <input type="text" placeholder="Person Responsible" name="staff" class="form-control"  value="{{request.form.staff }}" required autofocus>
+        <input type="text" placeholder="Event  ex. Fundraising" name="event" class="form-control"  value="{{request.form.event }}" required autofocus>
+        <input type="integer" placeholder="Income" name="income" class="form-control"  value="{{request.form.income }}" required autofocus>
+        <input type="integer" placeholder="Expense" name="expense" class="form-control"  value="{{request.form.expense }}" required autofocus>
+        <input class="btn btn-lg btn-primary btn-block" type="submit" value="Modify">
+    </form>
+</div>
+
+<div class="row marketing">
+    <div class="col-lg-6">
+        
+        <table class="pure-table pure-table-horizontal">
+         <thead>
+            <td>TransactionID</td>
+            <td>Date</td>
+            <td>Person Responsible</td>
+            <td>Event</td>
+            <td>Income</td>
+            <td>Expense</td>
+            <td>Balance</td>
+         </thead>
+         
+         {% for row in rows %}
+            <tr>
+               <td>{{row["TransactionID"]}}</td>
+               <td>{{row["Date"]}}</td>
+               <td> {{row["Person_Responsible"]}}</td>
+               <td>{{row["Event"]}}</td>
+               <td>{{row["Income"]}}</td>
+               <td> {{row["Expense"]}}</td>
+               <td>{{row["Balance"]}}</td>
+            </tr>
+         {% endfor %}
+      </table>
+    </div>
+</div>
+ 
+{% endblock %}
