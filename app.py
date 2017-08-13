@@ -6,7 +6,7 @@ import sqlite3
 app = Flask(__name__)
 app.secret_key = 'CACTES'
 
-username = ""
+user = ""
 
 #login required decorator
 def login_required(f):
@@ -40,8 +40,7 @@ def welcome():
     except sqlite3.OperationalError:
         flash("You have no database")
 
-    username = "admin"
-    return render_template('welcome.html', user=username, rows=rows)
+    return render_template('welcome.html', user=user, rows=rows)
 
 
 @app.route('/addTransaction', methods=['GET', 'POST'])
@@ -170,6 +169,8 @@ def login():
     if request.method == 'POST':
         try:
             username = request.form['username']
+            global user 
+            user = username
 
             g.db = sqlite3.connect('CACTES.db')
             cur = g.db.execute("SELECT Password FROM Staff WHERE Username='{}'".format(username))

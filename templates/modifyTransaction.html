@@ -19,13 +19,26 @@
 <div class="jumbotron">
     <h1>Modify Data</h1>
     <form class="form-signin" action="" method="post">
-        <input type="integer" placeholder="TransactionID" name="transactionID" class="form-control"  value="{{request.form.transactionID }}" required autofocus>
-        <input type="text" placeholder="Date  ex. July 9, 2017" name="date" class="form-control"  value="{{request.form.date }}" required autofocus>
-        <input type="text" placeholder="Person Responsible" name="staff" class="form-control"  value="{{request.form.staff }}" required autofocus>
-        <input type="text" placeholder="Event  ex. Fundraising" name="event" class="form-control"  value="{{request.form.event }}" required autofocus>
-        <input type="integer" placeholder="Income" name="income" class="form-control"  value="{{request.form.income }}" required autofocus>
-        <input type="integer" placeholder="Expense" name="expense" class="form-control"  value="{{request.form.expense }}" required autofocus>
-        <input class="btn btn-lg btn-primary btn-block" type="submit" value="Modify">
+        <h3 style="text-align:left; font-size:20px;">District</h3>
+        <select class="form-control" name="district" required autofocus>
+            <option value="{{request.form.district }}">Vancouver/Bunraby</option>
+            <option value="{{request.form.district }}">Coquitlam</option>
+            <option value="{{request.form.district }}">Delta</option>
+            <option value="{{request.form.district }}">Surrey</option>
+        </select>
+        <h3 style="text-align:left; font-size:20px;">Transaction ID</h3>
+        <input type="number" name="transactionID" class="form-control"  value="{{request.form.transactionID }}" required>
+        <h3 style="text-align:left; font-size:20px;">Date</h3>
+        <input type="date" name="date" class="form-control"  value="{{request.form.date }}" required>
+        <h3 style="text-align:left; font-size:20px;">Person Responsible</h3>
+        <input type="text" name="staff" class="form-control"  value="{{request.form.staff }}" required>
+        <h3 style="text-align:left; font-size:20px;">Event</h3>
+        <input type="text" name="event" class="form-control"  value="{{request.form.event }}" required>
+        <h3 style="text-align:left; font-size:20px;">Income</h3>
+        <input type="number" name="income" class="form-control"  value="{{request.form.income }}" required>
+        <h3 style="text-align:left; font-size:20px;">Expense</h3>
+        <input type="number" name="expense" class="form-control"  value="{{request.form.expense }}" required>
+        <input class="btn btn-lg btn-primary btn-block" type="submit" value="Add">
     </form>
 </div>
 
