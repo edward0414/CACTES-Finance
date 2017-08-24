@@ -1,4 +1,9 @@
-function openCity(evt, cityName) {
+$( document ).ready(function() {
+    document.getElementById("defaultOpen").click();
+});
+
+
+function openTab(evt, label) {
     var i, tabcontent, tablinks;
     tabcontent = document.getElementsByClassName("tabcontent");
     for (i = 0; i < tabcontent.length; i++) {
@@ -8,8 +13,6 @@ function openCity(evt, cityName) {
     for (i = 0; i < tablinks.length; i++) {
         tablinks[i].className = tablinks[i].className.replace(" active", "");
     }
-    document.getElementById(cityName).style.display = "block";
-    evt.currentTarget.className += " active";
+    document.getElementById(label).style.display = "block";
+    evt.currentTarget.className += "active";
 }
-
-console.log("A");

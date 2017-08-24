@@ -33,14 +33,32 @@ def welcome():
     try:
         g.db = sqlite3.connect('CACTES.db')
         g.db.row_factory = sqlite3.Row
-        cur = g.db.execute('select * from Finance')
-        rows = cur.fetchall()
+        #Select from Van
+        cur = g.db.execute('select * from Vancouver')
+        van = cur.fetchall()
+
+        #Select from Surrey
+        cur = g.db.execute('select * from Surrey')
+        surrey = cur.fetchall()
+
+        #Select from Delta
+        cur = g.db.execute('select * from Delta')
+        delta = cur.fetchall()
+
+        #Select from Coquitlam
+        cur = g.db.execute('select * from Coquitlam')
+        coquitlam = cur.fetchall()
+
+        #Select from Total
+        cur = g.db.execute('select * from Total')
+        total = cur.fetchall()
+
         g.db.close()
 
     except sqlite3.OperationalError:
         flash("You have no database")
 
-    return render_template('welcome.html', user=user, rows=rows)
+    return render_template('welcome.html', user=user, vans=van, surreys=surrey, deltas=delta, coquitlams=coquitlam, totals=total)
 
 
 @app.route('/addTransaction', methods=['GET', 'POST'])
@@ -48,6 +66,7 @@ def addTransaction():
     error = None
     if request.method == 'POST':
         try:
+            district = request.form['district']
             date = request.form['date']
             staff = request.form['staff']
             event = request.form['event']
@@ -56,13 +75,26 @@ def addTransaction():
 
             g.db = sqlite3.connect('CACTES.db')
 
+            diff = int(income) - int(expense)
+
             #auto update the balance
-            cur = g.db.execute('SELECT Max(TransactionID), Balance FROM Finance')
+            cur = g.db.execute("SELECT Max(TransactionID), Balance FROM {}".format(district))
+            for row in cur.fetchall():
+                transID = row[0]
+                balance = row[1]
+            transID = int(transID) + 1
+            balance = int(balance) + diff
+            
+            cur = g.db.execute("INSERT INTO {} (Date,Person_Responsible,Event,Income,Expense,Balance) VALUES (?,?,?,?,?,?)".format(district),(date,staff,event,income,expense,balance))
+
+
+            #auto update total
+            cur = g.db.execute("SELECT Max(ID), Balance FROM Total")
             for row in cur.fetchall():
                 balance = row[1]
-            balance = int(balance) + int(income) - int(expense)
-            
-            cur = g.db.execute('INSERT INTO Finance (Date,Person_Responsible,Event,Income,Expense,Balance) VALUES (?,?,?,?,?,?)',(date,staff,event,income,expense,balance))
+            balance = int(balance) + diff
+
+            cur = g.db.execute("INSERT INTO Total (District,ID_District,Date,Person_Responsible,Event,Income,Expense,Balance) VALUES (?,?,?,?,?,?,?,?)",(district,transID,date,staff,event,income,expense,balance))
             g.db.commit()
             g.db.close()
             error = "Record successfully added!"
@@ -81,8 +113,26 @@ def modifyTransaction():
     try:
         g.db = sqlite3.connect('CACTES.db')
         g.db.row_factory = sqlite3.Row
-        cur = g.db.execute('SELECT * FROM Finance')
-        rows = cur.fetchall()
+        #Select from Van
+        cur = g.db.execute('select * from Vancouver')
+        van = cur.fetchall()
+
+        #Select from Surrey
+        cur = g.db.execute('select * from Surrey')
+        surrey = cur.fetchall()
+
+        #Select from Delta
+        cur = g.db.execute('select * from Delta')
+        delta = cur.fetchall()
+
+        #Select from Coquitlam
+        cur = g.db.execute('select * from Coquitlam')
+        coquitlam = cur.fetchall()
+
+        #Select from Total
+        cur = g.db.execute('select * from Total')
+        total = cur.fetchall()
+
         g.db.close()
 
     except sqlite3.OperationalError:
@@ -90,33 +140,49 @@ def modifyTransaction():
 
     if request.method == 'POST':
         try:
-            transactionID = request.form['transactionID']
+            district = request.form['district']
+            transID = request.form['transactionID']
             date = request.form['date']
             staff = request.form['staff']
             event = request.form['event']
             income = request.form['income']
             expense = request.form['expense']
 
+            print(1)
+
             g.db = sqlite3.connect('CACTES.db')
 
             #auto update the balance
-            cur = g.db.execute('SELECT Balance FROM Finance WHERE TransactionID=?', (int(transactionID)-1,))
+            cur = g.db.execute('SELECT Balance FROM {} WHERE TransactionID={}'.format(district, int(transID)-1))
             for row in cur.fetchall():
                 balance = row[0]
             balance = int(balance) + int(income) - int(expense)
+            print(2)
             
             #calculate the difference between the updated balance and the original balance
-            cur = g.db.execute('SELECT Balance FROM Finance WHERE TransactionID=?', (transactionID,))
+            cur = g.db.execute('SELECT Balance FROM {} WHERE TransactionID={}'.format(district, transID))
             for row in cur.fetchall():
                 temp = row[0]
             diff = int(temp) - balance
+            print(3)
 
-            #Update this transaction
-            cur = g.db.execute('UPDATE Finance SET Date=?,Person_Responsible=?,Event=?,Income=?,Expense=?,Balance=? WHERE TransactionID=?',(date,staff,event,income,expense,balance,transactionID))
+            #Update this transaction in the district and Total
+            print(district)
+            cur = g.db.execute("UPDATE {} SET Date='{}',Person_Responsible='{}',Event='{}',Income={},Expense={},Balance={} WHERE TransactionID={}".format(district,date,staff,event,income,expense,balance,transID))
+            print("a")
+            cur = g.db.execute("UPDATE Total SET Date='{}',Person_Responsible='{}',Event='{}',Income={},Expense={} WHERE District='{}' AND ID_District={}".format(date,staff,event,income,expense,district,transID))
+            print(4)
 
-            #Update the balance of every other transactions
-            cur = g.db.execute('UPDATE Finance SET Balance=Balance-? WHERE TransactionID>?', (diff,transactionID))
-            
+            #Update the balance of other transactions in the district
+            cur = g.db.execute("UPDATE {} SET Balance=Balance-{} WHERE TransactionID>{}".format(district,diff,transID))
+            print(5)
+
+            #Update the balance of other trans in Total
+            cur = g.db.execute("SELECT ID FROM Total WHERE District='{}' AND ID_District={}".format(district, transID))
+            for row in cur.fetchall():
+                ID = row[0]
+            cur = g.db.execute("UPDATE Total SET Balance=Balance-{} WHERE ID>={}".format(diff,ID))
+            print(6)
 
             g.db.commit()
             g.db.close()
@@ -127,7 +193,7 @@ def modifyTransaction():
             error = "Fail to modify data"
 
 
-    return render_template('modifyTransaction.html', error=error, rows=rows)
+    return render_template('modifyTransaction.html', error=error, vans=van, surreys=surrey, deltas=delta, coquitlams=coquitlam, totals=total)
 
 
 

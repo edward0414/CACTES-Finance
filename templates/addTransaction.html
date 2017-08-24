@@ -21,21 +21,21 @@
     <form class="form-signin" action="" method="post">
         <h3 style="text-align:left; font-size:20px;">District</h3>
         <select class="form-control" name="district" required autofocus>
-            <option value="{{request.form.district }}">Vancouver/Bunraby</option>
-            <option value="{{request.form.district }}">Coquitlam</option>
-            <option value="{{request.form.district }}">Delta</option>
-            <option value="{{request.form.district }}">Surrey</option>
+            <option>Surrey</option>
+            <option>Vancouver</option>
+            <option>Coquitlam</option>
+            <option>Delta</option>
         </select>
         <h3 style="text-align:left; font-size:20px;">Date</h3>
-        <input type="date" name="date" class="form-control"  value="{{request.form.date }}" required>
+        <input type="date" name="date" class="form-control" required>
         <h3 style="text-align:left; font-size:20px;">Person Responsible</h3>
-        <input type="text" name="staff" class="form-control"  value="{{request.form.staff }}" required>
+        <input type="text" name="staff" class="form-control" placeholder="Full Name"required>
         <h3 style="text-align:left; font-size:20px;">Event</h3>
-        <input type="text" name="event" class="form-control"  value="{{request.form.event }}" required>
+        <input type="text" name="event" class="form-control" required>
         <h3 style="text-align:left; font-size:20px;">Income</h3>
-        <input type="number" name="income" class="form-control"  value="{{request.form.income }}" required>
+        <input type="number" name="income" class="form-control" required>
         <h3 style="text-align:left; font-size:20px;">Expense</h3>
-        <input type="number" name="expense" class="form-control"  value="{{request.form.expense }}" required>
+        <input type="number" name="expense" class="form-control" required>
         <input class="btn btn-lg btn-primary btn-block" type="submit" value="Add">
     </form>
 </div>
