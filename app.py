@@ -1,12 +1,22 @@
 from flask import Flask, flash, redirect, render_template, request, g, session, url_for
 from functools import wraps
+from flask_sqlalchemy import SQLAlchemy
 import os
 import sqlite3
 
+# create the application object
 app = Flask(__name__)
-app.secret_key = 'CACTES'
 
-user = ""
+# config
+app.config.from_object('config.DevelopmentConfig')
+
+# create the sqlalchemy object
+db = SQLAlchemy(app)
+
+from models import *
+
+user = ''
+
 
 #login required decorator
 def login_required(f):
@@ -30,33 +40,40 @@ def home():
 @app.route('/welcome')
 @login_required
 def welcome():
-    try:
-        g.db = sqlite3.connect('CACTES.db')
-        g.db.row_factory = sqlite3.Row
-        #Select from Van
-        cur = g.db.execute('select * from Vancouver')
-        van = cur.fetchall()
+    # try:
+    #     g.db = sqlite3.connect('CACTES.db')
+    #     g.db.row_factory = sqlite3.Row
+    #     #Select from Van
+    #     cur = g.db.execute('select * from Vancouver')
+    #     van = cur.fetchall()
 
-        #Select from Surrey
-        cur = g.db.execute('select * from Surrey')
-        surrey = cur.fetchall()
+    #     #Select from Surrey
+    #     cur = g.db.execute('select * from Surrey')
+    #     surrey = cur.fetchall()
 
-        #Select from Delta
-        cur = g.db.execute('select * from Delta')
-        delta = cur.fetchall()
+    #     #Select from Delta
+    #     cur = g.db.execute('select * from Delta')
+    #     delta = cur.fetchall()
 
-        #Select from Coquitlam
-        cur = g.db.execute('select * from Coquitlam')
-        coquitlam = cur.fetchall()
+    #     #Select from Coquitlam
+    #     cur = g.db.execute('select * from Coquitlam')
+    #     coquitlam = cur.fetchall()
 
-        #Select from Total
-        cur = g.db.execute('select * from Total')
-        total = cur.fetchall()
+    #     #Select from Total
+    #     cur = g.db.execute('select * from Total')
+    #     total = cur.fetchall()
 
-        g.db.close()
+    #     g.db.close()
 
-    except sqlite3.OperationalError:
-        flash("You have no database")
+    # except sqlite3.OperationalError:
+    #     flash("You have no database")
+
+    
+    van = db.session.query(Vancouver).all()
+    surrey = db.session.query(Surrey).all()
+    delta = db.session.query(Delta).all()
+    coquitlam = db.session.query(Coquitlam).all()
+    total = db.session.query(Total).all()
 
     return render_template('welcome.html', user=user, vans=van, surreys=surrey, deltas=delta, coquitlams=coquitlam, totals=total)
 
@@ -233,26 +250,19 @@ def login():
 
     error = None
     if request.method == 'POST':
-        try:
-            username = request.form['username']
-            global user 
-            user = username
+        credential = db.session.query(Staff).filter_by(email=request.form['email']).first()
+        if (credential is None):
+            error = 'Invalid credentials. Please try again.'
 
-            g.db = sqlite3.connect('CACTES.db')
-            cur = g.db.execute("SELECT Password FROM Staff WHERE Username='{}'".format(username))
-            for row in cur.fetchall():
-                password = row[0]
-            
-            g.db.close()
-
-            if request.form['password'] == password:
+        else:
+            if credential.password != request.form['password']:
+                error = 'Invalid credentials. Please try again.'
+            else:
+                global user
+                user = credential.fName
                 session['logged_in'] = True
                 return redirect(url_for('welcome'))
-            else:
-                error = 'Invalid credentials. Please try again.'
 
-        except sqlite3.OperationalError:
-            error = "Fail to log in."
 
     return render_template('login.html', error=error)
 
@@ -269,4 +279,4 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run(debug=True,host='0.0.0.0', port=4000)
+    app.run(host='0.0.0.0',port=4000)
