@@ -1,9 +1,8 @@
-from flask import Flask, flash, redirect, render_template, request, g, session, url_for
+from flask import Flask, flash, redirect, render_template, request, session, url_for
 from functools import wraps
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import desc
 import os
-import sqlite3
 
 # create the application object
 app = Flask(__name__)
