@@ -1,6 +1,7 @@
 from flask import Flask, flash, redirect, render_template, request, g, session, url_for
 from functools import wraps
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import desc
 import os
 import sqlite3
 
@@ -40,34 +41,6 @@ def home():
 @app.route('/welcome')
 @login_required
 def welcome():
-    # try:
-    #     g.db = sqlite3.connect('CACTES.db')
-    #     g.db.row_factory = sqlite3.Row
-    #     #Select from Van
-    #     cur = g.db.execute('select * from Vancouver')
-    #     van = cur.fetchall()
-
-    #     #Select from Surrey
-    #     cur = g.db.execute('select * from Surrey')
-    #     surrey = cur.fetchall()
-
-    #     #Select from Delta
-    #     cur = g.db.execute('select * from Delta')
-    #     delta = cur.fetchall()
-
-    #     #Select from Coquitlam
-    #     cur = g.db.execute('select * from Coquitlam')
-    #     coquitlam = cur.fetchall()
-
-    #     #Select from Total
-    #     cur = g.db.execute('select * from Total')
-    #     total = cur.fetchall()
-
-    #     g.db.close()
-
-    # except sqlite3.OperationalError:
-    #     flash("You have no database")
-
     
     van = db.session.query(Vancouver).all()
     surrey = db.session.query(Surrey).all()
@@ -82,132 +55,169 @@ def welcome():
 def addTransaction():
     error = None
     if request.method == 'POST':
-        try:
-            district = request.form['district']
-            date = request.form['date']
-            staff = request.form['staff']
-            event = request.form['event']
-            income = request.form['income']
-            expense = request.form['expense']
 
-            g.db = sqlite3.connect('CACTES.db')
+        district = request.form['district']
+        date = request.form['date']
+        staff = request.form['staff']
+        event = request.form['event']
+        income = int(request.form['income'])
+        expense = int(request.form['expense'])
 
-            diff = int(income) - int(expense)
+        diff = income - expense
 
-            #auto update the balance
-            cur = g.db.execute("SELECT Max(TransactionID), Balance FROM {}".format(district))
-            for row in cur.fetchall():
-                transID = row[0]
-                balance = row[1]
+        #auto update the balance
+        if district == "Vancouver":
+            cur = db.session.query(Vancouver).order_by(desc(Vancouver.transactionID)).limit(1)
+            transID = cur[0].transactionID
+            balance = cur[0].balance
+
             transID = int(transID) + 1
             balance = int(balance) + diff
-            
-            cur = g.db.execute("INSERT INTO {} (Date,Person_Responsible,Event,Income,Expense,Balance) VALUES (?,?,?,?,?,?)".format(district),(date,staff,event,income,expense,balance))
+            db.session.add(Vancouver(date, staff, event, income, expense, balance))
 
+        elif district == "Surrey":
+            cur = db.session.query(Surrey).order_by(desc(Surrey.transactionID)).limit(1)
+            transID = cur[0].transactionID
+            balance = cur[0].balance
 
-            #auto update total
-            cur = g.db.execute("SELECT Max(ID), Balance FROM Total")
-            for row in cur.fetchall():
-                balance = row[1]
+            transID = int(transID) + 1
             balance = int(balance) + diff
+            db.session.add(Surrey(date, staff, event, income, expense, balance))
 
-            cur = g.db.execute("INSERT INTO Total (District,ID_District,Date,Person_Responsible,Event,Income,Expense,Balance) VALUES (?,?,?,?,?,?,?,?)",(district,transID,date,staff,event,income,expense,balance))
-            g.db.commit()
-            g.db.close()
-            error = "Record successfully added!"
-            return redirect(url_for('welcome'))
+        elif district == "Coquitlam":
+            cur = db.session.query(Coquitlam).order_by(desc(Coquitlam.transactionID)).limit(1)
+            transID = cur[0].transactionID
+            balance = cur[0].balance
 
-        except sqlite3.OperationalError:
-            error = "Fail to insert new data"
+            transID = int(transID) + 1
+            balance = int(balance) + diff
+            db.session.add(Coquitlam(date, staff, event, income, expense, balance))
 
+        elif district == "Delta":
+            cur = db.session.query(Delta).order_by(desc(Delta.transactionID)).limit(1)
+            transID = cur[0].transactionID
+            balance = cur[0].balance
+
+            transID = int(transID) + 1
+            balance = int(balance) + diff
+            db.session.add(Delta(date, staff, event, income, expense, balance))
+
+
+        #auto update total
+        cur = db.session.query(Total).order_by(desc(Total.id)).limit(1)
+        balance = cur[0].balance
+        balance = int(balance) + diff
+
+        db.session.add(Total(district, transID, date, staff, event, income, expense, balance))
+        db.session.commit()
+        error = "Record successfully added!"
+        return redirect(url_for('welcome'))
 
     return render_template('addTransaction.html', error=error)
+
 
 
 @app.route('/modifyTransaction', methods=['GET', 'POST'])
 def modifyTransaction():
     error = None
-    try:
-        g.db = sqlite3.connect('CACTES.db')
-        g.db.row_factory = sqlite3.Row
-        #Select from Van
-        cur = g.db.execute('select * from Vancouver')
-        van = cur.fetchall()
 
-        #Select from Surrey
-        cur = g.db.execute('select * from Surrey')
-        surrey = cur.fetchall()
-
-        #Select from Delta
-        cur = g.db.execute('select * from Delta')
-        delta = cur.fetchall()
-
-        #Select from Coquitlam
-        cur = g.db.execute('select * from Coquitlam')
-        coquitlam = cur.fetchall()
-
-        #Select from Total
-        cur = g.db.execute('select * from Total')
-        total = cur.fetchall()
-
-        g.db.close()
-
-    except sqlite3.OperationalError:
-        error = "Fail to show the database"
+    van = db.session.query(Vancouver).all()
+    surrey = db.session.query(Surrey).all()
+    delta = db.session.query(Delta).all()
+    coquitlam = db.session.query(Coquitlam).all()
+    total = db.session.query(Total).all()
 
     if request.method == 'POST':
-        try:
-            district = request.form['district']
-            transID = request.form['transactionID']
-            date = request.form['date']
-            staff = request.form['staff']
-            event = request.form['event']
-            income = request.form['income']
-            expense = request.form['expense']
+        district = request.form['district']
+        transID = request.form['transactionID']
+        date = request.form['date']
+        staff = request.form['staff']
+        event = request.form['event']
+        income = int(request.form['income'])
+        expense = int(request.form['expense'])
 
-            print(1)
-
-            g.db = sqlite3.connect('CACTES.db')
-
+        
+        if district == "Vancouver":
             #auto update the balance
-            cur = g.db.execute('SELECT Balance FROM {} WHERE TransactionID={}'.format(district, int(transID)-1))
-            for row in cur.fetchall():
-                balance = row[0]
-            balance = int(balance) + int(income) - int(expense)
-            print(2)
-            
-            #calculate the difference between the updated balance and the original balance
-            cur = g.db.execute('SELECT Balance FROM {} WHERE TransactionID={}'.format(district, transID))
-            for row in cur.fetchall():
-                temp = row[0]
-            diff = int(temp) - balance
-            print(3)
+            cur = db.session.query(Vancouver).filter_by(transactionID=(int(transID)-1)).first()
+            balance = cur.balance
+            balance = int(balance) + income - expense
 
-            #Update this transaction in the district and Total
-            print(district)
-            cur = g.db.execute("UPDATE {} SET Date='{}',Person_Responsible='{}',Event='{}',Income={},Expense={},Balance={} WHERE TransactionID={}".format(district,date,staff,event,income,expense,balance,transID))
-            print("a")
-            cur = g.db.execute("UPDATE Total SET Date='{}',Person_Responsible='{}',Event='{}',Income={},Expense={} WHERE District='{}' AND ID_District={}".format(date,staff,event,income,expense,district,transID))
-            print(4)
+            #calculate the difference between the updated balance and the original balance
+            cur = db.session.query(Vancouver).filter_by(transactionID=transID).first()
+            temp = cur.balance
+            diff = int(temp) - balance
+
+            #Update this transaction in the district
+            db.session.query(Vancouver).filter_by(transactionID=transID).update({"date":date, "personResponsible":staff, "event":event, "income":income, "expense":expense, "balance":balance})
 
             #Update the balance of other transactions in the district
-            cur = g.db.execute("UPDATE {} SET Balance=Balance-{} WHERE TransactionID>{}".format(district,diff,transID))
-            print(5)
+            db.session.query(Vancouver).filter(Vancouver.transactionID > transID).update({"balance":(Vancouver.balance-diff)})
 
-            #Update the balance of other trans in Total
-            cur = g.db.execute("SELECT ID FROM Total WHERE District='{}' AND ID_District={}".format(district, transID))
-            for row in cur.fetchall():
-                ID = row[0]
-            cur = g.db.execute("UPDATE Total SET Balance=Balance-{} WHERE ID>={}".format(diff,ID))
-            print(6)
 
-            g.db.commit()
-            g.db.close()
-            error = "Record successfully added!"
-            return redirect(url_for('welcome'))
+        elif district == "Coquitlam":
+            #auto update the balance
+            cur = db.session.query(Coquitlam).filter_by(transactionID=(int(transID)-1)).first()
+            balance = cur.balance
+            balance = int(balance) + income - expense
 
-        except sqlite3.OperationalError:
-            error = "Fail to modify data"
+            #calculate the difference between the updated balance and the original balance
+            cur = db.session.query(Coquitlam).filter_by(transactionID=transID).first()
+            temp = cur.balance
+            diff = int(temp) - balance
+
+            #Update this transaction in the district
+            db.session.query(Coquitlam).filter_by(transactionID=transID).update({"date":date, "personResponsible":staff, "event":event, "income":income, "expense":expense, "balance":balance})
+
+            #Update the balance of other transactions in the district
+            db.session.query(Coquitlam).filter(Coquitlam.transactionID > transID).update({"balance":(Coquitlam.balance-diff)})
+
+
+        elif district == "Delta":
+            #auto update the balance
+            cur = db.session.query(Delta).filter_by(transactionID=(int(transID)-1)).first()
+            balance = cur.balance
+            balance = int(balance) + income - expense
+
+            #calculate the difference between the updated balance and the original balance
+            cur = db.session.query(Delta).filter_by(transactionID=transID).first()
+            temp = cur.balance
+            diff = int(temp) - balance
+
+            #Update this transaction in the district
+            db.session.query(Delta).filter_by(transactionID=transID).update({"date":date, "personResponsible":staff, "event":event, "income":income, "expense":expense, "balance":balance})
+
+            #Update the balance of other transactions in the district
+            db.session.query(Delta).filter(Delta.transactionID > transID).update({"balance":(Delta.balance-diff)})
+
+
+        elif district == "Surrey":
+            #auto update the balance
+            cur = db.session.query(Surrey).filter_by(transactionID=(int(transID)-1)).first()
+            balance = cur.balance
+            balance = int(balance) + income - expense
+
+            #calculate the difference between the updated balance and the original balance
+            cur = db.session.query(Surrey).filter_by(transactionID=transID).first()
+            temp = cur.balance
+            diff = int(temp) - balance
+
+            #Update this transaction in the district
+            db.session.query(Surrey).filter_by(transactionID=transID).update({"date":date, "personResponsible":staff, "event":event, "income":income, "expense":expense, "balance":balance})
+
+            #Update the balance of other transactions in the district
+            db.session.query(Surrey).filter(Surrey.transactionID > transID).update({"balance":(Surrey.balance-diff)})
+
+
+        #Update this trans and the balance of other trans in Total
+        db.session.query(Total).filter_by(id_district=transID, district=district).update({"date":date, "personResponsible":staff, "event":event, "income":income, "expense":expense})
+        cur = db.session.query(Total).filter_by(id_district=transID, district=district).first()
+        id = int(cur.id) -1
+        db.session.query(Total).filter(Total.id > id).update({"balance":(Total.balance-diff)})
+        db.session.commit()
+        error = "Record successfully added!"
+        return redirect(url_for('welcome'))
+
 
 
     return render_template('modifyTransaction.html', error=error, vans=van, surreys=surrey, deltas=delta, coquitlams=coquitlam, totals=total)
@@ -220,25 +230,17 @@ def signup():
 
     error = None
     if request.method == 'POST':
-        try:
-            fname = request.form['fname']
-            lname = request.form['lname']
-            username = request.form['username']
-            password = request.form['password']
-            school = request.form['school']
-            email = request.form['email']
-            position = request.form['position']
+        fname = request.form['fname']
+        lname = request.form['lname']
+        email = request.form['email']
+        password = request.form['password']
+        school = request.form['school']
+        position = request.form['position']
 
-            g.db = sqlite3.connect('CACTES.db')
-            
-            cur = g.db.execute('INSERT INTO Staff (FirstName,LastName,Username,Password,School,Email,Position) VALUES (?,?,?,?,?,?,?)',(fname,lname,username,password,school,email,position))
-            g.db.commit()
-            g.db.close()
-            error = "Sign up successfully!"
-            return redirect(url_for('login'))
-
-        except sqlite3.OperationalError:
-            error = "Fail to sign up."
+        db.session.add(Staff(fname, lname, email, password, school, position))
+        db.session.commit()
+        error = "Sign up successfully!"
+        return redirect(url_for('login'))
 
     return render_template('signup.html', error=error)
 
