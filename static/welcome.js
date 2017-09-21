@@ -1,8 +1,3 @@
-$( document ).ready(function() {
-    document.getElementById("defaultOpen").click();
-});
-
-
 function openTab(evt, label) {
     var i, tabcontent, tablinks;
     tabcontent = document.getElementsByClassName("tabcontent");
@@ -14,5 +9,5 @@ function openTab(evt, label) {
         tablinks[i].className = tablinks[i].className.replace(" active", "");
     }
     document.getElementById(label).style.display = "block";
-    evt.currentTarget.className += "active";
+    evt.currentTarget.className += " active";
 }
