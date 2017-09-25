@@ -1,9 +1,11 @@
-# default config
+import os
 
+
+# default config
 class BaseConfig(object):
 	DEBUG = False
 	SECRET_KEY = 'CACTES'
-	SQLALCHEMY_DATABASE_URI = 'sqlite:///test2.db'
+	SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
 	SQLALCHEMY_TRACK_MODIFICATIONS = False
 	
 
