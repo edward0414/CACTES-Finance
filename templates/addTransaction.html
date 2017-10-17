@@ -1,43 +1,195 @@
-{% extends "base.html" %}
-{% block content %}
-
+<html lang="en">
+ 
+<head>
+    <title>CACTES Association Staff Website</title>
+ 
+    <link href="https://getbootstrap.com/docs/3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+ 
+    <link href="{{ url_for('static', filename = 'jumbotron-narrow.css') }}" rel="stylesheet">
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+ 
+    <script type="text/javascript" src="{{ url_for('static', filename = 'addTrans.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename = 'jquery-3.2.1.js') }}"></script>
+</head>
+ 
+<body>
+<div class="container">
 <div class="header">
     <nav>
       <ul class="nav nav-pills pull-right">
-        <li role="presentation"><a href="/welcome">Home</a></li>
-        <li role="presentation" class="active"><a href="/addTransaction">Add New Data</a></li>
-        <li role="presentation"><a href="/modifyTransaction">Modify Data</a></li>
+        <li role="presentation"><a href="/welcome"><span class="glyphicon glyphicon-home" style="padding-right:3px;"></span>Home</a></li>
+        <li class="nav-item dropdown active">
+            <a class="dropdown-toggle" data-toggle="dropdown" role="button">Data<span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li style="width:100%"><a href="/addTransaction">Add New Data</a></li>
+              <li><a href="/modifyTransaction">Modify Data</a></li>
+            </ul>
+        </li>
         <li role="presentation"><a href="/logout">Log Out</a></li>
       </ul>
     </nav>
-    <h3 class="text-muted">CACTES Association</h3>
+    <div class="form-one-line">
+        <img src="/static/CACTES_logo.png" width="35" height="35" class="d-inline-block align-top" alt="" style="padding-right:3px">
+        <h3 class="text-muted" style="font-weight:bold;">CACTES Association</h3>
+    </div>
 </div>
 
+<div style="padding:0 0 5px 10px;">
     {% if error %}
-        <p class="error"><strong>Error:</strong> {{ error }}</p>
+        <p style="color:red;"><strong>Error:</strong> {{ error }}</p>
     {% endif %}
+</div>
 <div class="jumbotron">
-    <h1>Add New Data</h1>
+    <h2 style="font-weight:bold;">Add New Data</h2>
     <form class="form-signin" action="" method="post">
-        <h3 style="text-align:left; font-size:20px;">District</h3>
-        <select class="form-control" name="district" required autofocus>
+        
+        <h3 class="custom-label">Type</h3>
+        {% if authorized %}
+        <select class="form-control" name="type" required>
             <option>Surrey</option>
             <option>Vancouver</option>
             <option>Coquitlam</option>
             <option>Delta</option>
+            <option>Administration</option>
         </select>
-        <h3 style="text-align:left; font-size:20px;">Date</h3>
+        {% else %}
+        <select class="form-control" name="type" required>
+            <option> {{ district }}</option>
+        </select>
+        {% endif %}
+        <h3 class="custom-label">Date</h3>
         <input type="date" name="date" class="form-control" required>
-        <h3 style="text-align:left; font-size:20px;">Person Responsible</h3>
+        <h3 class="custom-label">Person Responsible</h3>
         <input type="text" name="staff" class="form-control" placeholder="Full Name"required>
-        <h3 style="text-align:left; font-size:20px;">Event</h3>
+        <h3 class="custom-label">Approved By</h3>
+        <input type="text" name="approved" class="form-control" placeholder="Full Name"required>
+        <h3 class="custom-label">Event</h3>
         <input type="text" name="event" class="form-control" required>
-        <h3 style="text-align:left; font-size:20px;">Income</h3>
-        <input type="number" name="income" class="form-control" required>
-        <h3 style="text-align:left; font-size:20px;">Expense</h3>
-        <input type="number" name="expense" class="form-control" required>
+        <div style="display:flex; flex-direction:row; padding-left:7.5%;">
+            <div style="display:flex; flex-direction:column; width:50%;">
+                <h3 class="custom-label">Income Bills Count</h3>
+                <div style="display:flex; flex-direction:column;">
+                    <div class="form-one-line">
+                        <label style="font-size:20px; padding-right:58px">$5</label>
+                        <input type="number" name="i-num5bill" class="form-control" style="width:75px;" value="0" required>
+                    </div>
+                    <div class="form-one-line">
+                        <label style="font-size:20px; padding-right:47px">$10</label>
+                        <input type="number" name="i-num10bill" class="form-control" style="width:75px;" value="0" required>
+                    </div>
+                    <div class="form-one-line">
+                        <label style="font-size:20px; padding-right:47px">$20</label>
+                        <input type="number" name="i-num20bill" class="form-control" style="width:75px;" value="0" required>
+                    </div>
+                    <div class="form-one-line">
+                        <label style="font-size:20px; padding-right:47px">$50</label>
+                        <input type="number" name="i-num50bill" class="form-control" style="width:75px;" value="0" required>
+                    </div>
+                    <div class="form-one-line">
+                        <label style="font-size:20px; padding-right:36px">$100</label>
+                        <input type="number" name="i-num100bill" class="form-control" style="width:75px;" value="0" required>
+                    </div>
+                </div>
+                <h3 class="custom-label">Income Coins Count</h3>
+                <div class="form-one-column">
+                    <div class="form-one-line">
+                        <label style="font-size:20px; padding-right:30px">$0.05</label>
+                        <input type="number" name="i-numNickel" class="form-control" style="width:75px;" value="0" required>
+                    </div>
+                    <div class="form-one-line">
+                        <label style="font-size:20px; padding-right:30px">$0.10</label>
+                        <input type="number" name="i-numDime" class="form-control" style="width:75px;" value="0" required>
+                    </div>
+                    <div class="form-one-line">
+                        <label style="font-size:20px; padding-right:30px">$0.25</label>
+                        <input type="number" name="i-numQuarter" class="form-control" style="width:75px;" value="0" required>
+                    </div>
+                    <div class="form-one-line">
+                        <label style="font-size:20px; padding-right:30px">$1.00</label>
+                        <input type="number" name="i-numLoonie" class="form-control" style="width:75px;" value="0" required>
+                    </div>
+                    <div class="form-one-line">
+                        <label style="font-size:20px; padding-right:30px">$2.00</label>
+                        <input type="number" name="i-numToonie" class="form-control" style="width:75px;" value="0" required>
+                    </div>
+                </div>
+                <h3 class="custom-label">Income Total</h3>
+                <input type="number" name="income" class="form-control" style="width:175px;" required>
+            </div>
+            <div style="display:flex; flex-direction:column; padding-left:5%">
+                <h3 class="custom-label">Expense Bills Count</h3>
+                <div class="form-one-column">
+                    <div class="form-one-line">
+                        <label style="font-size:20px; padding-right:58px">$5</label>
+                        <input type="number" name="e-num5bill" class="form-control" style="width:75px;" value="0" required>
+                    </div>
+                    <div class="form-one-line">
+                        <label style="font-size:20px; padding-right:47px">$10</label>
+                        <input type="number" name="e-num10bill" class="form-control" style="width:75px;" value="0" required>
+                    </div>
+                    <div class="form-one-line">
+                        <label style="font-size:20px; padding-right:47px">$20</label>
+                        <input type="number" name="e-num20bill" class="form-control" style="width:75px;" value="0" required>
+                    </div>
+                    <div class="form-one-line">
+                        <label style="font-size:20px; padding-right:47px">$50</label>
+                        <input type="number" name="e-num50bill" class="form-control" style="width:75px;" value="0" required>
+                    </div>
+                    <div class="form-one-line">
+                        <label style="font-size:20px; padding-right:36px">$100</label>
+                        <input type="number" name="e-num100bill" class="form-control" style="width:75px;" value="0" required>
+                    </div>
+                </div>
+                <h3 class="custom-label">Expense Coins Count</h3>
+                <div class="form-one-column">
+                    <div class="form-one-line">
+                        <label style="font-size:20px; padding-right:30px">$0.05</label>
+                        <input type="number" name="e-numNickel" class="form-control" style="width:75px;" value="0" required>
+                    </div>
+                    <div class="form-one-line">
+                        <label style="font-size:20px; padding-right:30px">$0.10</label>
+                        <input type="number" name="e-numDime" class="form-control" style="width:75px;" value="0" required>
+                    </div>
+                    <div class="form-one-line">
+                        <label style="font-size:20px; padding-right:30px">$0.25</label>
+                        <input type="number" name="e-numQuarter" class="form-control" style="width:75px;" value="0" required>
+                    </div>
+                    <div class="form-one-line">
+                        <label style="font-size:20px; padding-right:30px">$1.00</label>
+                        <input type="number" name="e-numLoonie" class="form-control" style="width:75px;" value="0" required>
+                    </div>
+                    <div class="form-one-line">
+                        <label style="font-size:20px; padding-right:30px">$2.00</label>
+                        <input type="number" name="e-numToonie" class="form-control" style="width:75px;" value="0" required>
+                    </div>
+                </div>
+                <h3 class="custom-label">Expense Total</h3>
+                <input type="number" name="expense" class="form-control" style="width:175px;" required>
+            </div>
+        </div>
+        <br>
+        <h3 class="custom-label">Cheque</h3>
+        <div class="form-one-line">
+            <label style="font-size:15px; padding-right:20px">Please enter the number of cheques involved.</label>
+            <input type="number" name="numCheq" id="numCheques" value="0">
+            <a onclick="addFields()" style="font-weight:bold; font-size:15px; padding-left:10px; cursor:pointer;">Load</a>
+        </div>
+        <br>
+        <div id="cheques">
+        </div>
+        <br>
+        <br>
         <input class="btn btn-lg btn-primary btn-block" type="submit" value="Add">
     </form>
 </div>
  
-{% endblock %}
+        <footer class="footer">
+            <p>&copy; CACTES Association 2017</p>
+        </footer>
+        
+    </div>
+</body>
+ 
+</html>

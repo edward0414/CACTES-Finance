@@ -4,27 +4,48 @@
 <div class="header">
     <nav>
       <ul class="nav nav-pills pull-right">
-        <li role="presentation" ><a href="/">Home</a></li>
-        <li role="presentation"><a href="/login">Log In</a></li>
+        <li role="presentation" ><a href="/"><span class="glyphicon glyphicon-home" style="padding-right:5px;"></span>Home</a></li>
+        <li role="presentation" ><a href="/login">Log In</a></li>
         <li role="presentation" class="active"><a href="/signup">Sign Up</a></li>
       </ul>
     </nav>
-    <h3 class="text-muted">CACTES Association</h3>
+    <div class="form-one-line">
+        <img src="/static/CACTES_logo.png" width="35" height="35" class="d-inline-block align-top" alt="" style="padding-right:3px">
+        <h3 class="text-muted" style="font-weight:bold;">CACTES Association</h3>
     </div>
+</div>
     
+<div style="padding:0 0 5px 10px;">
     {% if error %}
         <p class="error"><strong>Error:</strong> {{ error }}</p>
     {% endif %}
+</div>
 
     <div class="jumbotron">
     <h1>CACTES Staff</h1>
+    <br>
     <form class="form-signin" action="" method="post">
         <input type="text" placeholder="First Name" name="fname" class="form-control" required>
         <input type="text" placeholder="Last Name" name="lname" class="form-control"  required>
         <input type="email" placeholder="Email" name="email" class="form-control"  required>
         <input type="text" placeholder="Password" name="password" class="form-control"  required>
-        <input type="text" placeholder="School" name="school" class="form-control"  required>
+        <select class="form-control" name="rank" style="height:34px"required>
+            <option disabled selected hidden>-- Select Authority --</option>
+            <option>Board</option>
+            <option>Senior</option>
+            <option>Junior</option>
+        </select>
+        <select class="form-control" name="district" style="height:34px" required>
+            <option disabled selected hidden>-- Select District    (select "All" if you are not a junior!)    --</option>
+            <option>Coquitlam</option>
+            <option>Delta</option>
+            <option>Surrey</option>
+            <option>Vancouver</option>
+            <option>All</option>
+        </select>
         <input type="text" placeholder="Position" name="position" class="form-control"  required>
+        <input type="text" placeholder="School" name="school" class="form-control"  required>
+        <br>
         <input class="btn btn-lg btn-primary btn-block" type="submit" value="Submit">
     </form>
 </div>

@@ -77,3 +77,37 @@ body {
     border-bottom: 0;
   }
 }
+
+
+.thead-default th {
+    color:#55595c;
+    background-color:#eceeef;
+}
+.heading {
+    color:#55595c;
+    background-color:#eceeef;
+}
+.form-one-line {
+    display: flex;
+    flex-direction: row;
+}
+
+.custom-label {
+    text-align:left; 
+    font-size:20px;
+}
+
+.form-one-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.data-result {
+    font-size:20px; 
+    color:#55595c;
+    font-weight: normal;
+}
+
+.user-welcome {
+    padding:0 0 5px 10px;
+}

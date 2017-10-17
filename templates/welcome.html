@@ -1,14 +1,15 @@
+
 <html lang="en">
  
 <head>
     <title>CACTES Association Staff Website</title>
  
-    <link rel="stylesheet" href="{{ url_for('static', filename = 'welcome.css') }}">
     <link href="https://getbootstrap.com/docs/3.3/dist/css/bootstrap.min.css" rel="stylesheet">
  
     <link href="{{ url_for('static', filename = 'jumbotron-narrow.css') }}" rel="stylesheet">
     
-    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
  
     <script type="text/javascript" src="{{ url_for('static', filename = 'welcome.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename = 'jquery-3.2.1.js') }}"></script>
@@ -18,199 +19,287 @@
     <div class="container">
         <div class="header">
             <nav>
-                <ul class="nav nav-pills pull-right">
-                    <li role="presentation" class="active"><a href="/welcome">Home</a></li>
-                    <li role="presentation"><a href="/addTransaction">Add New Data</a></li>
-                    <li role="presentation"><a href="/modifyTransaction">Modify Data</a></li>
-                    <li role="presentation"><a href="/logout">Log Out</a></li>
-                </ul>
+              <ul class="nav nav-pills pull-right">
+                <li role="presentation" class="active"><a href="/welcome"><span class="glyphicon glyphicon-home" style="padding-right:3px;"></span>Home</a></li>
+                <li class="nav-item dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" role="button">Data<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                      <li style="width:100%"><a href="/addTransaction">Add New Data</a></li>
+                      <li><a href="/modifyTransaction">Modify Data</a></li>
+                    </ul>
+                </li>
+                <li role="presentation"><a href="/logout">Log Out</a></li>
+              </ul>
             </nav>
-            <h3 class="text-muted">CACTES Association</h3>
+            <div class="form-one-line">
+                <img src="/static/CACTES_logo.png" width="35" height="35" class="d-inline-block align-top" alt="" style="padding-right:3px">
+                <h3 class="text-muted" style="font-weight:bold;">CACTES Association</h3>
+            </div>
         </div>
+        <div class="user-welcome">
         {% if user %}
-        <h4><strong>Welcome, {{ user }} </strong></h4>
+        <h4><span class="glyphicon glyphicon-user" style="padding-right:5px"></span><strong>Welcome, {{ user }}!</strong>
+            {% if notSeen >0 %}<span class="label label-info" style="padding-left:5px">New {{ notSeen }}</span>
+            {% endif %}</h4>
         {% endif %}
+        </div>
 
         <div class="jumbotron">
             <h1>CACTES Finance</h1>
             <p class="lead"></p>
+            <br>
             <p><a class="btn btn-lg btn-success" href="/addTransaction" role="button">Add New Data</a>
             </p>
             <p><a class="btn btn-lg btn-success" href="/modifyTransaction" role="button">Modify Data</a>
             </p>
         </div>
 
-        <div class="tab">
-          <button class="tablinks" onclick="openTab(event, 'Total')" id="defaultOpen">Total</button>
-          <button class="tablinks active" onclick="openTab(event, 'Vancouver')">Vancouver</button>
-          <button class="tablinks" onclick="openTab(event, 'Surrey')">Surrey</button>
-          <button class="tablinks" onclick="openTab(event, 'Delta')">Delta</button>
-          <button class="tablinks" onclick="openTab(event, 'Coquitlam')">Coquitlam</button>
-        </div>
-
-        
-        <div id="Total" class="tabcontent">
-            <span onclick="this.parentElement.style.display='none'" class="topright">x</span>
-            <div class="row marketing">
-                <div class="col-lg-6">
-
-                    <table class="pure-table pure-table-horizontal">
-                     <thead>
-                        <td>District</td>
-                         <td>ID</td>
-                        <td>Date</td>
-                        <td>Person Responsible</td>
-                        <td>Event</td>
-                        <td>Income</td>
-                        <td>Expense</td>
-                        <td>Balance</td>
-                     </thead>
-
-                     {% for row in totals %}
-                        <tr>
-                            <td>{{row["district"]}}</td>
-                            <td>{{row["id_district"]}}</td>
-                           <td>{{row["date"]}}</td>
-                           <td> {{row["personResponsible"]}}</td>
-                           <td>{{row["event"]}}</td>
-                           <td>{{row["income"]}}</td>
-                           <td> {{row["expense"]}}</td>
-                           <td>{{row["balance"]}}</td>
-                        </tr>
-                     {% endfor %}
-                  </table>
+        <div class="row marketing">
+            <div class="col-lg">
+                <h2 style="text-align:center;">Transactions Table</h2>
+                <br>
+                <div class="form-one-line">
+                    {% if authorized %}
+                    <select class="form-control" id="filterType">
+                        <option disabled selected hidden>--  Search Transaction Type  --</option>
+                        <option>Surrey</option>
+                        <option>Vancouver</option>
+                        <option>Delta</option>
+                        <option>Coquitlam</option>
+                        <option>Administration</option>
+                        <option>All</option>
+                    </select>
+                    {% endif %}
+                    <select class="form-control" id="filterYear">
+                        <option disabled selected hidden>--  Search Year  --</option>
+                        <option>2018</option>
+                        <option>2017</option>
+                        <option>2016</option>
+                        <option>2015</option>
+                        <option>2014</option>
+                        <option>All</option>
+                    </select>
+                    <select class="form-control" id="filterMonth">
+                        <option disabled selected hidden>--  Search Month  --</option>
+                        <option>January</option>
+                        <option>February</option>
+                        <option>March</option>
+                        <option>April</option>
+                        <option>May</option>
+                        <option>June</option>
+                        <option>July</option>
+                        <option>August</option>
+                        <option>September</option>
+                        <option>October</option>
+                        <option>November</option>
+                        <option>December</option>
+                        <option>All</option>
+                    </select>
                 </div>
+                <br>
+                
+                <table id="total" class="table table-bordered table-hover table-responsive">
+                 <thead class="thead-default">
+                    <th>ID</th>
+                     <th>Type</th>
+                    <th>Date</th>
+                    <th>Person Responsible</th>
+                     <th>Approved By</th>
+                    <th>Event</th>
+                    <th>Income</th>
+                    <th>Expense</th>
+                 </thead>
+
+                    <tbody id="transactions">
+                    {% if authorized %}
+                    {% for row in transactions %}
+                    <tr data-toggle="modal" data-target="#transInfo" style="cursor:pointer;">
+                        <td class="id">{{row["transactionID"]}}</td>
+                        <td class="type">{{row["transType"]}}</td>
+                       <td class="date">{{row["date"]}}</td>
+                       <td class="staff"> {{row["personResponsible"]}}</td>
+                        <td class="approved">{{row["approvedBy"]}}</td>
+                       <td class="event">{{row["event"]}}</td>
+                       <td class="income">{{row["income"]}}</td>
+                       <td class="expense"> {{row["expense"]}}</td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    {% for row in transactions %}
+                    <tr data-toggle="modal" data-target="#transInfo" style="cursor:pointer;">
+                        <td class="id">{{row["transactionID"]}}</td>
+                        <td class="type">{{ district }}</td>
+                       <td class="date">{{row["date"]}}</td>
+                       <td class="staff"> {{row["personResponsible"]}}</td>
+                        <td class="approved">{{row["approvedBy"]}}</td>
+                       <td class="event">{{row["event"]}}</td>
+                       <td class="income">{{row["income"]}}</td>
+                       <td class="expense"> {{row["expense"]}}</td>
+                    </tr>
+                    {% endfor %}
+                    {% endif %}
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <td class="heading" colspan="3" style="font-weight:bold;">Total</td>
+                        <td colspan="3"></td>
+                        <td id="iTotal" style="text-align:center;font-weight:bold;"></td>
+                        <td id="eTotal" style="text-align:center;font-weight:bold;" ></td>
+                    </tr>
+                    <tr>
+                        <td class="heading" colspan="3" style="font-weight:bold;">Balance</td>
+                        <td colspan="3" id="balanceComment" style="text-align:right;"></td>
+                        <td colspan="2" id="balance" style="text-align:center;font-weight:bold;"></td>
+                    </tr>
+                    <tr>
+                        <td class="heading" colspan="3" style="font-weight:bold;">Operating Ratio</td>
+                        <td colspan="3" id="ratioComment" style="text-align:right;"></td>
+                        <td colspan="2" id="ratio" style="text-align:center;font-weight:bold;"></td>
+                    </tr>
+                    </tfoot>
+              </table>
+
+
+                <!-- Modal Content -->
+
+                <div id="transInfo" class="modal fade" role="dialog" aria-labelledby="transInfo" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                        <h3 style="padding-left:10px">Transaction</h3>
+                      </div>
+                      <div class="modal-body">
+
+                        <div style="padding:0 2%;">
+                            <table class="table table-bordered table-hover">
+                                <tr>
+                                    <td class="heading" style="font-size:20px;font-weight:bold;">ID</td>
+                                    <td id="transID" class="data-result"></td>
+                                    <td class="heading" style="font-size:20px;font-weight:bold;">Responsible</td>
+                                    <td id="staff" class="data-result"></td>
+                                </tr>
+                                <tr>
+                                    <td class="heading" style="font-size:20px;font-weight:bold;">Type</td>
+                                    <td id="type" class="data-result"></td>
+                                    <td class="heading" style="font-size:20px;font-weight:bold;">Approved</td>
+                                    <td id="approvedBy" class="data-result"></td>
+                                </tr>
+                                <tr>
+                                    <td class="heading" style="font-size:20px;font-weight:bold;">Date</td>
+                                    <td id="date" class="data-result"></td>
+                                    <td class="heading" style="font-size:20px;font-weight:bold;">Event</td>
+                                    <td id="event" class="data-result"></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Money count part in the modal-->
+                          
+                        <div style="padding:0 2%;">
+                            <table class="table table-bordered table-hover">
+                                <tr>
+                                    <td class="heading" colspan="2" style="font-size:20px;font-weight:bold;">Income Bills Count</td>
+                                    <td class="heading" colspan="2" style="font-size:20px;font-weight:bold;">Expense Bills Count</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size:20px;font-weight:bold;">$5</td>
+                                    <td id="i-bill5" class="data-result"></td>
+                                    <td style="font-size:20px;font-weight:bold;">$5</td>
+                                    <td id="e-bill5" class="data-result"></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size:20px;font-weight:bold;">$10</td>
+                                    <td id="i-bill10" class="data-result"></td>
+                                    <td style="font-size:20px;font-weight:bold;">$10</td>
+                                    <td id="e-bill10" class="data-result"></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size:20px;font-weight:bold;">$20</td>
+                                    <td id="i-bill20" class="data-result"></td>
+                                    <td style="font-size:20px;font-weight:bold;">$20</td>
+                                    <td id="e-bill20" class="data-result"></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size:20px;font-weight:bold;">$50</td>
+                                    <td id="i-bill50" class="data-result"></td>
+                                    <td style="font-size:20px;font-weight:bold;">$50</td>
+                                    <td id="e-bill50" class="data-result"></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size:20px;font-weight:bold;">$100</td>
+                                    <td id="i-bill100" class="data-result"></td>
+                                    <td style="font-size:20px;font-weight:bold;">$100</td>
+                                    <td id="e-bill100" class="data-result"></td>
+                                </tr>
+                            </table>
+                            <table class="table table-bordered table-hover">
+                                <tr>
+                                    <td class="heading" colspan="2" style="font-size:20px;font-weight:bold;">Income Coins Count</td>
+                                    <td class="heading" colspan="2" style="font-size:20px;font-weight:bold;">Expense Coins Count</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size:20px;font-weight:bold;">$0.05</td>
+                                    <td id="i-nickel" class="data-result"></td>
+                                    <td style="font-size:20px;font-weight:bold;">$0.05</td>
+                                    <td id="e-nickel" class="data-result"></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size:20px;font-weight:bold;">$0.10</td>
+                                    <td id="i-dime" class="data-result"></td>
+                                    <td style="font-size:20px;font-weight:bold;">$0.10</td>
+                                    <td id="e-dime" class="data-result"></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size:20px;font-weight:bold;">$0.25</td>
+                                    <td id="i-quarter" class="data-result"></td>
+                                    <td style="font-size:20px;font-weight:bold;">$0.25</td>
+                                    <td id="e-quarter" class="data-result"></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size:20px;font-weight:bold;">$1.00</td>
+                                    <td id="i-loonie" class="data-result"></td>
+                                    <td style="font-size:20px;font-weight:bold;">$1.00</td>
+                                    <td id="e-loonie" class="data-result"></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size:20px;font-weight:bold;">$2.00</td>
+                                    <td id="i-toonie" class="data-result"></td>
+                                    <td style="font-size:20px;font-weight:bold;">$2.00</td>
+                                    <td id="e-toonie" class="data-result"></td>
+                                </tr>
+                            </table>
+                            <table class="table table-bordered table-hover">
+                                <tr>
+                                    <td class="heading" style="font-size:20px;font-weight:bold;">Income Total</td>
+                                    <td class="heading" style="font-size:20px;font-weight:bold;">Expense Total</td>
+                                </tr>
+                                <tr>
+                                    <td id="income" class="data-result"></td>
+                                    <td id="expense" class="data-result"></td>
+                                </tr>
+                            </table>
+                        </div>
+                          
+                        <!-- Cheque part -->
+                        <br>
+                        <h3 class="custom-label" style="padding-left:2.5%;font-weight:bold;">Cheque</h3>
+                        <div id="cheques">
+                        </div>
+
+                        <!-- The end of the modal info -->  
+
+                      </div>
+                      <div class="modal-footer">
+                        <button class="btn btn-primary btn-lg" data-dismiss="modal" aria-hidden="true">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
             </div>
         </div>
 
-        
-        <div id="Vancouver" class="tabcontent" style="display:block;">
-            <span onclick="this.parentElement.style.display='none'" class="topright">x</span>
-            <div class="row marketing">
-                <div class="col-lg-6">
-
-                    <table class="pure-table pure-table-horizontal">
-                     <thead>
-                        <td>ID</td>
-                        <td>Date</td>
-                        <td>Person Responsible</td>
-                        <td>Event</td>
-                        <td>Income</td>
-                        <td>Expense</td>
-                        <td>Balance</td>
-                     </thead>
-
-                     {% for row in vans %}
-                        <tr>
-                           <td>{{row["transactionID"]}}</td>
-                           <td>{{row["date"]}}</td>
-                           <td> {{row["personResponsible"]}}</td>
-                           <td>{{row["event"]}}</td>
-                           <td>{{row["income"]}}</td>
-                           <td> {{row["expense"]}}</td>
-                           <td>{{row["balance"]}}</td>
-                        </tr>
-                     {% endfor %}
-                  </table>
-                </div>
-            </div>
-        </div>
-
-        <div id="Surrey" class="tabcontent">
-            <span onclick="this.parentElement.style.display='none'" class="topright">x</span>
-            <div class="row marketing">
-                <div class="col-lg-6">
-
-                    <table class="pure-table pure-table-horizontal">
-                     <thead>
-                        <td>ID</td>
-                        <td>Date</td>
-                        <td>Person Responsible</td>
-                        <td>Event</td>
-                        <td>Income</td>
-                        <td>Expense</td>
-                        <td>Balance</td>
-                     </thead>
-
-                     {% for row in surreys %}
-                        <tr>
-                           <td>{{row["transactionID"]}}</td>
-                           <td>{{row["date"]}}</td>
-                           <td> {{row["personResponsible"]}}</td>
-                           <td>{{row["event"]}}</td>
-                           <td>{{row["income"]}}</td>
-                           <td> {{row["expense"]}}</td>
-                           <td>{{row["balance"]}}</td>
-                        </tr>
-                     {% endfor %}
-                  </table>
-                </div>
-            </div>
-        </div>
-
-        <div id="Delta" class="tabcontent">
-            <span onclick="this.parentElement.style.display='none'" class="topright">x</span>
-            <div class="row marketing">
-                <div class="col-lg-6">
-
-                    <table class="pure-table pure-table-horizontal">
-                     <thead>
-                        <td>ID</td>
-                        <td>Date</td>
-                        <td>Person Responsible</td>
-                        <td>Event</td>
-                        <td>Income</td>
-                        <td>Expense</td>
-                        <td>Balance</td>
-                     </thead>
-
-                     {% for row in deltas %}
-                        <tr>
-                           <td>{{row["transactionID"]}}</td>
-                           <td>{{row["date"]}}</td>
-                           <td> {{row["personResponsible"]}}</td>
-                           <td>{{row["event"]}}</td>
-                           <td>{{row["income"]}}</td>
-                           <td> {{row["expense"]}}</td>
-                           <td>{{row["balance"]}}</td>
-                        </tr>
-                     {% endfor %}
-                  </table>
-                </div>
-            </div>
-        </div>
-        
-        <div id="Coquitlam" class="tabcontent">
-            <span onclick="this.parentElement.style.display='none'" class="topright">x</span>
-            <div class="row marketing">
-                <div class="col-lg-6">
-
-                    <table class="pure-table pure-table-horizontal">
-                     <thead>
-                        <td>ID</td>
-                        <td>Date</td>
-                        <td>Person Responsible</td>
-                        <td>Event</td>
-                        <td>Income</td>
-                        <td>Expense</td>
-                        <td>Balance</td>
-                     </thead>
-
-                     {% for row in coquitlams %}
-                        <tr>
-                           <td>{{row["transactionID"]}}</td>
-                           <td>{{row["date"]}}</td>
-                           <td> {{row["personResponsible"]}}</td>
-                           <td>{{row["event"]}}</td>
-                           <td>{{row["income"]}}</td>
-                           <td> {{row["expense"]}}</td>
-                           <td>{{row["balance"]}}</td>
-                        </tr>
-                     {% endfor %}
-                  </table>
-                </div>
-            </div>
-        </div>
 
         <footer class="footer">
             <p>&copy; CACTES Association 2017</p>

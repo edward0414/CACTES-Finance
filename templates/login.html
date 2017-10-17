@@ -4,30 +4,35 @@
 <div class="header">
     <nav>
       <ul class="nav nav-pills pull-right">
-        <li role="presentation" ><a href="/">Home</a></li>
+        <li role="presentation" ><a href="/"><span class="glyphicon glyphicon-home" style="padding-right:3px;"></span>Home</a></li>
         <li role="presentation" class="active"><a href="/login">Log In</a></li>
         <li role="presentation"><a href="/signup">Sign Up</a></li>
       </ul>
     </nav>
-    <h3 class="text-muted">CACTES Association</h3>
+    <div class="form-one-line">
+        <img src="/static/CACTES_logo.png" width="35" height="35" class="d-inline-block align-top" alt="" style="padding-right:3px">
+        <h3 class="text-muted" style="font-weight:bold;">CACTES Association</h3>
     </div>
+</div>
     
+<div style="padding:0 0 5px 10px;">
     {% for message in get_flashed_messages() %}
     <h4>{{ message }}</h4>
     {% endfor %}
+    {% if error %}
+    <p style="color:red;"><strong>Error:</strong> {{ error }}</p>
+    {% endif %}
+</div>
 
     <div class="jumbotron">
     <h1>CACTES Staff</h1>
+    <br>
     <form class="form-signin" action="" method="post">
         <input type="email" placeholder="Email" name="email" class="form-control" required autofocus>
-        <input type="text" placeholder="Password" name="password" class="form-control"required>
+        <input type="password" placeholder="Password" name="password" class="form-control"required>
+        <br>
         <input class="btn btn-lg btn-primary btn-block" type="submit" value="Login">
-    </form>
-        
-    {% if error %}
-        <p class="error"><strong>Error:</strong> {{ error }}</p>
-    {% endif %}
-        
+    </form> 
     </div>
 
 {% endblock %}
