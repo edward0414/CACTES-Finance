@@ -1,4 +1,4 @@
-from app import db
+from app import db, bcrypt
 
 
 class Staff(db.Model):
@@ -18,7 +18,7 @@ class Staff(db.Model):
 		self.fName = fName
 		self.lName = lName
 		self.email = email
-		self.password = password
+		self.password = bcrypt.generate_password_hash(password)
 		self.rank = rank
 		self.district = district
 		self.position = position

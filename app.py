@@ -1,15 +1,16 @@
 from flask import Flask, flash, redirect, render_template, request, session, url_for, jsonify, make_response
 from functools import wraps
 from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
 from sqlalchemy import desc
 import os
 
 # create the application object
 app = Flask(__name__)
+bcrypt = Bcrypt(app)
 
 # config
-# app.config.from_object(os.environ['APP_SETTINGS'])
-app.config.from_object('config.DevelopmentConfig')
+app.config.from_object(os.environ['APP_SETTINGS'])
 
 # create the sqlalchemy object
 db = SQLAlchemy(app)
@@ -433,7 +434,7 @@ def login():
             error = 'Not a registered email. Please sign up!'
 
         else:
-            if credential.password != request.form['password']:
+            if not bcrypt.check_password_hash(credential.password, request.form['password']):
                 error = 'Invalid credentials. Please try again.'
             else:
                 session['user'] = credential.fName
