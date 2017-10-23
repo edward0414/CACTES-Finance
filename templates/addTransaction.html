@@ -67,8 +67,24 @@
         <input type="text" name="approved" class="form-control" placeholder="Full Name"required>
         <h3 class="custom-label">Event</h3>
         <input type="text" name="event" class="form-control" required>
+        <br>
+        <br>
+<!--
+        <div style="display:flex; flex-direction:row;">
+            <div style="padding-left:5%;">
+                <label class="form-check-label">
+                  <input type="checkbox" id="i-check" class="form-check-input" name="i-check" value="income?"> Bills & Coins counts for income?
+                </label>
+            </div>
+            <div style="padding-left:7.5%;">
+                <label class="form-check-label">
+                  <input type="checkbox" id="e-check" class="form-check-input" name="e-check" value="expense?"> Bills & Coins counts for expense?
+                </label>
+            </div>
+        </div>
+-->
         <div style="display:flex; flex-direction:row; padding-left:7.5%;">
-            <div style="display:flex; flex-direction:column; width:50%;">
+            <div id="i-moneycount" style="display:flex; flex-direction:column; width:50%;">
                 <h3 class="custom-label">Income Bills Count</h3>
                 <div style="display:flex; flex-direction:column;">
                     <div class="form-one-line">
@@ -114,11 +130,11 @@
                         <label style="font-size:20px; padding-right:30px">$2.00</label>
                         <input type="number" name="i-numToonie" class="form-control" style="width:75px;" value="0" required>
                     </div>
+                    <h3 class="custom-label">Income Total</h3>
+                    <input type="number" name="income" class="form-control" style="width:175px;" required>
                 </div>
-                <h3 class="custom-label">Income Total</h3>
-                <input type="number" name="income" class="form-control" style="width:175px;" required>
             </div>
-            <div style="display:flex; flex-direction:column; padding-left:5%">
+            <div id="e-moneycount" style="display:flex; flex-direction:column; padding-left:5%">
                 <h3 class="custom-label">Expense Bills Count</h3>
                 <div class="form-one-column">
                     <div class="form-one-line">
@@ -164,11 +180,24 @@
                         <label style="font-size:20px; padding-right:30px">$2.00</label>
                         <input type="number" name="e-numToonie" class="form-control" style="width:75px;" value="0" required>
                     </div>
+                    <h3 class="custom-label">Expense Total</h3>
+                    <input type="number" name="expense" class="form-control" style="width:175px;" required>
                 </div>
+            </div>
+        </div>
+        <br>
+<!--
+        <div style="display:flex; flex-direction:row;">
+            <div style="padding-left:7.5%; width:50%">
+                <h3 class="custom-label">Income Total</h3>
+                <input type="number" name="income" class="form-control" style="width:175px;" required>
+            </div>
+            <div style="padding-left:5%;">
                 <h3 class="custom-label">Expense Total</h3>
                 <input type="number" name="expense" class="form-control" style="width:175px;" required>
             </div>
         </div>
+-->
         <br>
         <h3 class="custom-label">Cheque</h3>
         <div class="form-one-line">

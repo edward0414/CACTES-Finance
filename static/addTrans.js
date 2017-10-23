@@ -1,3 +1,19 @@
+//$(function(){
+//    $('#i-moneycount').hide();
+//    $('#e-moneycount').hide();
+//    
+//    $("#i-check").click(function(){
+//       $('#i-moneycount').toggle(this.checked); 
+//    });
+//    
+//    $("#e-check").click(function(){
+//       $('#e-moneycount').toggle(this.checked); 
+//    });
+//});
+
+
+
+
 //Sample Cheque Form
 /*
 <div style="padding-left:7.5%;">
