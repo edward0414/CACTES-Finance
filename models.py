@@ -88,7 +88,7 @@ class MoneyCount(db.Model):
 class Transaction(db.Model):
 	transactionID = db.Column(db.Integer, primary_key=True)
 	transType = db.Column(db.String(20), nullable=False)
-	date = db.Column(db.Text, nullable=False)
+	date = db.Column(db.date, nullable=False)
 	personResponsible = db.Column(db.String(25), nullable=False)
 	approvedBy = db.Column(db.String(25), nullable=False)
 	event = db.Column(db.String(25), nullable=False)
