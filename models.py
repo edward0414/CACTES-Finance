@@ -8,7 +8,7 @@ class Staff(db.Model):
 	fName = db.Column(db.String(12), nullable=False)
 	lName = db.Column(db.String(12), nullable=False)
 	email = db.Column(db.String(60), nullable=False)
-	password = db.Column(db.String(30), nullable=False)
+	password = db.Column(db.String(120), nullable=False)
 	rank = db.Column(db.String(25), nullable=False)
 	district = db.Column(db.String(25), nullable=False) 
 	position = db.Column(db.String(25), nullable=False)
