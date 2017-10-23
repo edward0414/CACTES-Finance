@@ -244,7 +244,7 @@ $(function(){
             var expense = $(this).find('.expense').html()
             $('#expense').text(' $ '+expense);
             
-//            var query = "http://localhost:4000/transactions/" + id
+            
             var query = "https://cactesfinance.herokuapp.com/transactions/" + id;
             
             
