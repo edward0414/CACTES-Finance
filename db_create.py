@@ -11,7 +11,7 @@ db.session.add(Transaction("Delta","2017-09-17", "Edward Feng", "Edward Feng","I
 db.session.add(Transaction("Surrey","2017-09-17", "Edward Feng", "Kevin Feng","Initial", 0, 0))
 db.session.add(Transaction("Vancouver","2017-09-17", "Edward Feng", "Edward Feng", "Initial", 0, 0))
 db.session.add(Transaction("Administration", "2017-09-17", "Edward Feng", "Edward", "Initial", 0, 0))
-db.session.add(Staff("Edward", "Feng", "admin@admin", "admin", "Senior", "None", "Treasurer", "University of Toronto"))
+db.session.add(Staff("Edward", "Feng", "admin@admin", "admin", "Senior", "All", "Treasurer", "University of Toronto"))
 db.session.add(MoneyCount("Income", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1))
 db.session.add(MoneyCount("expense", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1))
 db.session.add(MoneyCount("Income", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2))
