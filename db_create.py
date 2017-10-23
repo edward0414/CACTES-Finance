@@ -6,11 +6,11 @@ db.create_all()
 
 
 # insert
-db.session.add(Transaction("Coquitlam","2017-10-06", "Edward Feng", "Edward Feng", "Initial", 0, 0))
-db.session.add(Transaction("Delta","2017-09-17", "Edward Feng", "Edward Feng","Initial", 0, 0))
-db.session.add(Transaction("Surrey","2017-09-17", "Edward Feng", "Edward Feng","Initial", 0, 0))
-db.session.add(Transaction("Vancouver","2017-09-17", "Edward Feng", "Edward Feng", "Initial", 0, 0))
-db.session.add(Transaction("Administration", "2017-09-17", "Edward Feng", "Edward Feng", "Initial", 0, 0))
+db.session.add(Transaction("Coquitlam","2017-10-22", "Edward Feng", "Edward Feng", "Initial", 0, 0))
+db.session.add(Transaction("Delta","2017-10-22", "Edward Feng", "Edward Feng","Initial", 0, 0))
+db.session.add(Transaction("Surrey","2017-10-22", "Edward Feng", "Edward Feng","Initial", 0, 0))
+db.session.add(Transaction("Vancouver","2017-10-22", "Edward Feng", "Edward Feng", "Initial", 0, 0))
+db.session.add(Transaction("Administration", "2017-10-22", "Edward Feng", "Edward Feng", "Initial", 0, 0))
 db.session.add(Staff("Edward", "Feng", "admin@admin", "admin", "Senior", "All", "Treasurer", "University of Toronto"))
 db.session.add(MoneyCount("Income", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1))
 db.session.add(MoneyCount("expense", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1))
