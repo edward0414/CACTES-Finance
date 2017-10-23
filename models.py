@@ -1,4 +1,5 @@
-from app import db, bcrypt
+from app import db
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class Staff(db.Model):
@@ -18,7 +19,7 @@ class Staff(db.Model):
 		self.fName = fName
 		self.lName = lName
 		self.email = email
-		self.password = bcrypt.generate_password_hash(password)
+		self.password = generate_password_hash(password)
 		self.rank = rank
 		self.district = district
 		self.position = position
@@ -27,6 +28,9 @@ class Staff(db.Model):
 
 	def __repr__(self):
 		return "<{} {}, position:{}>".format(self.fName, self.lName, self.position)
+
+	def check_password(self, password):
+		return check_password_hash(self.password, password)
 
 
 class Cheque(db.Model):
