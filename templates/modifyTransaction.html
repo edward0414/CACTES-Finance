@@ -20,13 +20,7 @@
             <nav>
               <ul class="nav nav-pills pull-right">
                 <li role="presentation"><a href="/welcome"><span class="glyphicon glyphicon-home" style="padding-right:3px;"></span>Home</a></li>
-                <li class="nav-item dropdown active">
-                    <a class="dropdown-toggle" data-toggle="dropdown" role="button">Data<span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                      <li style="width:100%"><a href="/addTransaction">Add New Data</a></li>
-                      <li><a href="/modifyTransaction">Modify Data</a></li>
-                    </ul>
-                </li>
+                <li role="presentation"><a href="/addTransaction">Add New Data</a></li>
                 <li role="presentation"><a href="/logout">Log Out</a></li>
               </ul>
             </nav>
@@ -43,58 +37,6 @@
         </div>
         
         
-        <!-- Table part  -->
-        
-        <div style="width:100%;height:40%;overflow:auto;">
-            <p style="padding:0 3px;"><strong>Note:</strong>  Look up the transaction information that you wish to modify!</p>
-            <table id="total" class="table table-bordered table-hover table-responsive">
-                 <thead class="thead-default">
-                    <th>ID</th>
-                     <th>Type</th>
-                    <th>Date</th>
-                    <th>Person Responsible</th>
-                     <th>Approved By</th>
-                    <th>Event</th>
-                    <th>Income</th>
-                    <th>Expense</th>
-                 </thead>
-
-                    <tbody id="transactions">
-                    {% if authorized %}
-                    {% for row in transactions %}
-                    <tr data-toggle="modal" data-target="#transInfo" style="cursor:pointer;">
-                        <td class="id">{{row["transactionID"]}}</td>
-                        <td class="type">{{row["transType"]}}</td>
-                       <td class="date">{{row["date"]}}</td>
-                       <td class="staff"> {{row["personResponsible"]}}</td>
-                        <td class="approved">{{row["approvedBy"]}}</td>
-                       <td class="event">{{row["event"]}}</td>
-                       <td class="income">{{row["income"]}}</td>
-                       <td class="expense"> {{row["expense"]}}</td>
-                    </tr>
-                    {% endfor %}
-                    {% else %}
-                    {% for row in transactions %}
-                    <tr data-toggle="modal" data-target="#transInfo" style="cursor:pointer;">
-                        <td class="id">{{row["transactionID"]}}</td>
-                        <td class="type">{{ district }}</td>
-                       <td class="date">{{row["date"]}}</td>
-                       <td class="staff"> {{row["personResponsible"]}}</td>
-                        <td class="approved">{{row["approvedBy"]}}</td>
-                       <td class="event">{{row["event"]}}</td>
-                       <td class="income">{{row["income"]}}</td>
-                       <td class="expense"> {{row["expense"]}}</td>
-                    </tr>
-                    {% endfor %}
-                    {% endif %}
-                    </tbody>
-              </table>
-        </div>
-        <br>
-        <br>
-        <br>
-        
-        
         <!-- Modify form -->
         
         <div class="jumbotron">
@@ -102,134 +44,160 @@
             <form class="form-signin" action="" method="post">
 
                 <h3 class="custom-label">Transaction ID</h3>
-                <input type="number" name="id" class="form-control" required>
+                <input type="number" name="id" class="form-control" value="{{ transaction["transactionID"] }}" required>
                 <h3 class="custom-label">Type</h3>
                 {% if authorized %}
                 <select class="form-control" name="type" required>
-                    <option>Surrey</option>
-                    <option>Vancouver</option>
-                    <option>Coquitlam</option>
-                    <option>Delta</option>
-                    <option>Administration</option>
+                    {% if transaction["transType"] == "Surrey" %}
+                    <option selected="selected" >Surrey</option>
+                    {% else %}
+                    <option >Surrey</option>
+                    {% endif %}
+                    
+                    {% if transaction["transType"] == "Vancouver" %}
+                    <option selected="selected" >Vancouver</option>
+                    {% else %}
+                    <option >Vancouver</option>
+                    {% endif %}
+                    
+                    {% if transaction["transType"] == "Coquitlam" %}
+                    <option selected="selected" >Coquitlam</option>
+                    {% else %}
+                    <option >Coquitlam</option>
+                    {% endif %}
+                    
+                    {% if transaction["transType"] == "Delta" %}
+                    <option selected="selected" >Delta</option>
+                    {% else %}
+                    <option >Delta</option>
+                    {% endif %}
+                    
+                    {% if transaction["transType"] == "Administration" %}
+                    <option selected="selected" >Administration</option>
+                    {% else %}
+                    <option >Administration</option>
+                    {% endif %}
                 </select>
                 {% else %}
                 <select class="form-control" name="type" required>
                     <option> {{ district }}</option>
                 </select>
                 {% endif %}
+                
+                
                 <h3 class="custom-label">Date</h3>
-                <input type="date" name="date" class="form-control" required>
+                <input type="date" name="date" class="form-control" value="{{ transaction["date"] }}" required>
                 <h3 class="custom-label">Person Responsible</h3>
-                <input type="text" name="staff" class="form-control" placeholder="Full Name"required>
+                <input type="text" name="staff" class="form-control" value="{{ transaction["personResponsible"] }}" required>
                 <h3 class="custom-label">Approved By</h3>
-                <input type="text" name="approved" class="form-control" placeholder="Full Name"required>
+                <input type="text" name="approved" class="form-control" value="{{ transaction["approvedBy"] }}" required>
                 <h3 class="custom-label">Event</h3>
-                <input type="text" name="event" class="form-control" required>
+                <input type="text" name="event" class="form-control" value="{{ transaction["event"] }}" required>
                 <div class="form-one-line" style="padding-left:7.5%;">
                     <div class="form-one-column" style="width:50%;">
                         <h3 class="custom-label">Income Bills Count</h3>
                         <div class="form-one-column">
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:58px">$5</label>
-                                <input type="number" name="i-num5bill" class="form-control" style="width:75px;" value="0" required>
+                                <input type="number" name="i-num5bill" class="form-control" style="width:75px;" value="{{ i_money["num5bill"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:47px">$10</label>
-                                <input type="number" name="i-num10bill" class="form-control" style="width:75px;" value="0" required>
+                                <input type="number" name="i-num10bill" class="form-control" style="width:75px;" value="{{ i_money["num10bill"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:47px">$20</label>
-                                <input type="number" name="i-num20bill" class="form-control" style="width:75px;" value="0" required>
+                                <input type="number" name="i-num20bill" class="form-control" style="width:75px;" value="{{ i_money["num20bill"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:47px">$50</label>
-                                <input type="number" name="i-num50bill" class="form-control" style="width:75px;" value="0" required>
+                                <input type="number" name="i-num50bill" class="form-control" style="width:75px;" value="{{ i_money["num50bill"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:36px">$100</label>
-                                <input type="number" name="i-num100bill" class="form-control" style="width:75px;" value="0" required>
+                                <input type="number" name="i-num100bill" class="form-control" style="width:75px;" value="{{ i_money["num100bill"] }}" required>
                             </div>
                         </div>
                         <h3 class="custom-label">Income Coins Count</h3>
                         <div class="form-one-column">
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:30px">$0.05</label>
-                                <input type="number" name="i-numNickel" class="form-control" style="width:75px;" value="0" required>
+                                <input type="number" name="i-numNickel" class="form-control" style="width:75px;" value="{{ i_money["numNickel"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:30px">$0.10</label>
-                                <input type="number" name="i-numDime" class="form-control" style="width:75px;" value="0" required>
+                                <input type="number" name="i-numDime" class="form-control" style="width:75px;" value="{{ i_money["numDime"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:30px">$0.25</label>
-                                <input type="number" name="i-numQuarter" class="form-control" style="width:75px;" value="0" required>
+                                <input type="number" name="i-numQuarter" class="form-control" style="width:75px;" value="{{ i_money["numQuarter"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:30px">$1.00</label>
-                                <input type="number" name="i-numLoonie" class="form-control" style="width:75px;" value="0" required>
+                                <input type="number" name="i-numLoonie" class="form-control" style="width:75px;" value="{{ i_money["numLoonie"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:30px">$2.00</label>
-                                <input type="number" name="i-numToonie" class="form-control" style="width:75px;" value="0" required>
+                                <input type="number" name="i-numToonie" class="form-control" style="width:75px;" value="{{ i_money["numToonie"] }}" required>
                             </div>
                         </div>
                         <h3 class="custom-label">Income Total</h3>
-                        <input type="number" name="income" class="form-control" style="width:175px;" required>
+                        <input type="number" name="income" class="form-control" style="width:175px;" value="{{ transaction["income"] }}" required>
                     </div>
                     <div class="form-one-column" style="padding-left:5%">
                         <h3 class="custom-label">Expense Bills Count</h3>
                         <div class="form-one-column">
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:58px">$5</label>
-                                <input type="number" name="e-num5bill" class="form-control" style="width:75px;" value="0" required>
+                                <input type="number" name="e-num5bill" class="form-control" style="width:75px;" value="{{ e_money["num5bill"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:47px">$10</label>
-                                <input type="number" name="e-num10bill" class="form-control" style="width:75px;" value="0" required>
+                                <input type="number" name="e-num10bill" class="form-control" style="width:75px;" value="{{ e_money["num10bill"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:47px">$20</label>
-                                <input type="number" name="e-num20bill" class="form-control" style="width:75px;" value="0" required>
+                                <input type="number" name="e-num20bill" class="form-control" style="width:75px;" value="{{ e_money["num20bill"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:47px">$50</label>
-                                <input type="number" name="e-num50bill" class="form-control" style="width:75px;" value="0" required>
+                                <input type="number" name="e-num50bill" class="form-control" style="width:75px;" value="{{ e_money["num50bill"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:36px">$100</label>
-                                <input type="number" name="e-num100bill" class="form-control" style="width:75px;" value="0" required>
+                                <input type="number" name="e-num100bill" class="form-control" style="width:75px;" value="{{ e_money["num100bill"] }}" required>
                             </div>
                         </div>
                         <h3 class="custom-label">Expense Coins Count</h3>
                         <div class="form-one-column">
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:30px">$0.05</label>
-                                <input type="number" name="e-numNickel" class="form-control" style="width:75px;" value="0" required>
+                                <input type="number" name="e-numNickel" class="form-control" style="width:75px;" value="{{ e_money["numNickel"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:30px">$0.10</label>
-                                <input type="number" name="e-numDime" class="form-control" style="width:75px;" value="0" required>
+                                <input type="number" name="e-numDime" class="form-control" style="width:75px;" value="{{ e_money["numDime"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:30px">$0.25</label>
-                                <input type="number" name="e-numQuarter" class="form-control" style="width:75px;" value="0" required>
+                                <input type="number" name="e-numQuarter" class="form-control" style="width:75px;" value="{{ e_money["numQuarter"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:30px">$1.00</label>
-                                <input type="number" name="e-numLoonie" class="form-control" style="width:75px;" value="0" required>
+                                <input type="number" name="e-numLoonie" class="form-control" style="width:75px;" value="{{ e_money["numLoonie"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:30px">$2.00</label>
-                                <input type="number" name="e-numToonie" class="form-control" style="width:75px;" value="0" required>
+                                <input type="number" name="e-numToonie" class="form-control" style="width:75px;" value="{{ e_money["numToonie"] }}" required>
                             </div>
                         </div>
                         <h3 class="custom-label">Expense Total</h3>
-                        <input type="number" name="expense" class="form-control" style="width:175px;" required>
+                        <input type="number" name="expense" class="form-control" style="width:175px;" value="{{ transaction["expense"] }}" required>
                     </div>
                 </div>
                 <br>
                 <h3 class="custom-label">Cheque</h3>
-                <div class="form-one-line">
+                <div class="form-one-line" style="margin:0 7.5%;">
                     <label style="font-size:15px; padding-right:20px">Please enter the number of cheques involved.</label>
                     <input type="number" name="numCheq" id="numCheques" value="0">
                     <a onclick="addFields()" style="font-weight:bold; font-size:15px; padding-left:10px; cursor:pointer;">Load</a>
@@ -243,143 +211,6 @@
             </form>
         </div>
         
-        
-        <!--  Modal Part      -->
-
-        <div id="transInfo" class="modal fade" role="dialog" aria-labelledby="transInfo" aria-hidden="true">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                        <h3 style="padding-left:10px">Transaction</h3>
-                      </div>
-                      <div class="modal-body">
-
-                        <div style="padding:0 2%;">
-                            <table class="table table-bordered table-hover">
-                                <tr>
-                                    <td class="heading" style="font-size:20px;font-weight:bold;">ID</td>
-                                    <td id="transID" class="data-result"></td>
-                                    <td class="heading" style="font-size:20px;font-weight:bold;">Responsible</td>
-                                    <td id="staff" class="data-result"></td>
-                                </tr>
-                                <tr>
-                                    <td class="heading" style="font-size:20px;font-weight:bold;">Type</td>
-                                    <td id="type" class="data-result"></td>
-                                    <td class="heading" style="font-size:20px;font-weight:bold;">Approved</td>
-                                    <td id="approvedBy" class="data-result"></td>
-                                </tr>
-                                <tr>
-                                    <td class="heading" style="font-size:20px;font-weight:bold;">Date</td>
-                                    <td id="date" class="data-result"></td>
-                                    <td class="heading" style="font-size:20px;font-weight:bold;">Event</td>
-                                    <td id="event" class="data-result"></td>
-                                </tr>
-                            </table>
-                        </div>
-
-                        <!-- Money count part in the modal-->
-                          
-                        <div style="padding:0 2%;">
-                            <table class="table table-bordered table-hover">
-                                <tr>
-                                    <td class="heading" colspan="2" style="font-size:20px;font-weight:bold;">Income Bills Count</td>
-                                    <td class="heading" colspan="2" style="font-size:20px;font-weight:bold;">Expense Bills Count</td>
-                                </tr>
-                                <tr>
-                                    <td style="font-size:20px;font-weight:bold;">$5</td>
-                                    <td id="i-bill5" class="data-result"></td>
-                                    <td style="font-size:20px;font-weight:bold;">$5</td>
-                                    <td id="e-bill5" class="data-result"></td>
-                                </tr>
-                                <tr>
-                                    <td style="font-size:20px;font-weight:bold;">$10</td>
-                                    <td id="i-bill10" class="data-result"></td>
-                                    <td style="font-size:20px;font-weight:bold;">$10</td>
-                                    <td id="e-bill10" class="data-result"></td>
-                                </tr>
-                                <tr>
-                                    <td style="font-size:20px;font-weight:bold;">$20</td>
-                                    <td id="i-bill20" class="data-result"></td>
-                                    <td style="font-size:20px;font-weight:bold;">$20</td>
-                                    <td id="e-bill20" class="data-result"></td>
-                                </tr>
-                                <tr>
-                                    <td style="font-size:20px;font-weight:bold;">$50</td>
-                                    <td id="i-bill50" class="data-result"></td>
-                                    <td style="font-size:20px;font-weight:bold;">$50</td>
-                                    <td id="e-bill50" class="data-result"></td>
-                                </tr>
-                                <tr>
-                                    <td style="font-size:20px;font-weight:bold;">$100</td>
-                                    <td id="i-bill100" class="data-result"></td>
-                                    <td style="font-size:20px;font-weight:bold;">$100</td>
-                                    <td id="e-bill100" class="data-result"></td>
-                                </tr>
-                            </table>
-                            <table class="table table-bordered table-hover">
-                                <tr>
-                                    <td class="heading" colspan="2" style="font-size:20px;font-weight:bold;">Income Coins Count</td>
-                                    <td class="heading" colspan="2" style="font-size:20px;font-weight:bold;">Expense Coins Count</td>
-                                </tr>
-                                <tr>
-                                    <td style="font-size:20px;font-weight:bold;">$0.05</td>
-                                    <td id="i-nickel" class="data-result"></td>
-                                    <td style="font-size:20px;font-weight:bold;">$0.05</td>
-                                    <td id="e-nickel" class="data-result"></td>
-                                </tr>
-                                <tr>
-                                    <td style="font-size:20px;font-weight:bold;">$0.10</td>
-                                    <td id="i-dime" class="data-result"></td>
-                                    <td style="font-size:20px;font-weight:bold;">$0.10</td>
-                                    <td id="e-dime" class="data-result"></td>
-                                </tr>
-                                <tr>
-                                    <td style="font-size:20px;font-weight:bold;">$0.25</td>
-                                    <td id="i-quarter" class="data-result"></td>
-                                    <td style="font-size:20px;font-weight:bold;">$0.25</td>
-                                    <td id="e-quarter" class="data-result"></td>
-                                </tr>
-                                <tr>
-                                    <td style="font-size:20px;font-weight:bold;">$1.00</td>
-                                    <td id="i-loonie" class="data-result"></td>
-                                    <td style="font-size:20px;font-weight:bold;">$1.00</td>
-                                    <td id="e-loonie" class="data-result"></td>
-                                </tr>
-                                <tr>
-                                    <td style="font-size:20px;font-weight:bold;">$2.00</td>
-                                    <td id="i-toonie" class="data-result"></td>
-                                    <td style="font-size:20px;font-weight:bold;">$2.00</td>
-                                    <td id="e-toonie" class="data-result"></td>
-                                </tr>
-                            </table>
-                            <table class="table table-bordered table-hover">
-                                <tr>
-                                    <td class="heading" style="font-size:20px;font-weight:bold;">Income Total</td>
-                                    <td class="heading" style="font-size:20px;font-weight:bold;">Expense Total</td>
-                                </tr>
-                                <tr>
-                                    <td id="income" class="data-result"></td>
-                                    <td id="expense" class="data-result"></td>
-                                </tr>
-                            </table>
-                        </div>
-                          
-                        <!-- Cheque part -->
-                        <br>
-                        <h3 class="custom-label" style="padding-left:2.5%;font-weight:bold;">Cheque</h3>
-                        <div id="cheques">
-                        </div>
-
-                        <!-- The end of the modal info -->  
-
-                      </div>
-                      <div class="modal-footer">
-                        <button class="btn btn-primary btn-lg" data-dismiss="modal" aria-hidden="true">Close</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
         
         <footer class="footer">
             <p>&copy; CACTES Association 2017</p>

@@ -5,8 +5,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 class Staff(db.Model):
 
 	staffID = db.Column(db.Integer, primary_key=True)
-	fName = db.Column(db.String(12), nullable=False)
-	lName = db.Column(db.String(12), nullable=False)
+	fName = db.Column(db.String(20), nullable=False)
+	lName = db.Column(db.String(20), nullable=False)
 	email = db.Column(db.String(60), nullable=False)
 	password = db.Column(db.String(120), nullable=False)
 	rank = db.Column(db.String(25), nullable=False)
@@ -98,11 +98,13 @@ class Transaction(db.Model):
 	event = db.Column(db.String(25), nullable=False)
 	income = db.Column(db.Integer, nullable=False)
 	expense = db.Column(db.Integer, nullable=False)
+	lastEdit = db.Column(db.String(40), nullable=False)
+	lastEditTime = db.Column(db.Text, nullable=False)
 	moneyCountID = db.relationship('MoneyCount', backref='Transaction', lazy=True)
 	cheque = db.relationship('Cheque', backref='Transaction', lazy=True)
 	
 
-	def __init__(self, transType, date, person, approvedBy, event, income, expense):
+	def __init__(self, transType, date, person, approvedBy, event, income, expense, lastEdit, lastEditTime):
 		self.transType = transType
 		self.date = date
 		self.personResponsible = person
@@ -110,6 +112,8 @@ class Transaction(db.Model):
 		self.event = event
 		self.income = income
 		self.expense = expense
+		self.lastEdit = lastEdit
+		self.lastEditTime = lastEditTime
 
 	def __repr__(self):
 		return "<{}: {}, {}, net:{}>".format(self.type, self.event, self.date, (self.income-self.expense))

@@ -211,7 +211,6 @@ $(function(){
 
     
     
-    
         // ----- Modal Feature ---------------------
     
     
@@ -245,14 +244,22 @@ $(function(){
             $('#expense').text(' $ '+expense);
             
             
-            var query = "https://cactesfinance.herokuapp.com/transactions/" + id;
+            var query = "/transactions/" + id;
             
             
             //------ moneyCount and Cheques part ----------
             
             $.getJSON(query, function(data){
             //send a GET request to get the moneyCount and cheque data
+                
+                
+                
+                var editComment = "(Last edit: " + data.transaction.lastEdit + " on " + data.transaction.lastEditTime + ")";
+                    
+                $('#edit').html(editComment);
 
+                
+                
                 for (var i=0;i<data.moneyCounts.length;i++) {
                     //------ handling moneyCount -------
                     
@@ -292,10 +299,15 @@ $(function(){
                     }
                     
                 } else {
-                    console.log("no cheque!");
                     $('#cheques').html('<label class="data-result" style="padding-left:7.5%;">There is no cheque involved in this transaction.</label><br>');
                 }
             });
+            
+            $("#modify").on('click', function(){
+                console.log(id);
+                location.href='/modifyTransaction/' + id;
+            });
+            
         });
 
 });
@@ -399,3 +411,88 @@ function buildCheque(num, type, cheqNum, issued, paid, amount) {
     var result = '<br><div style="padding:0 4%;"><table class="table table-bordered table-hover"><tr><td class="heading" colspan="4" style="font-size:20px;font-weight:bold;">Cheque '+num+'</td></tr><tr><td style="font-size:20px;font-weight:bold;">Type</td><td class="data-result">'+type+'</td><td style="font-size:20px;font-weight:bold;">Issued By</td><td class="data-result">'+issued+'</td></tr><tr><td style="font-size:20px;font-weight:bold;">Cheque #</td><td class="data-result">'+cheqNum+'</td><td style="font-size:20px;font-weight:bold;">Pay To</td><td class="data-result">'+paid+'</td></tr><tr><td colspan="1" style="font-size:20px;font-weight:bold;">Amount</td><td colspan="3" class="data-result">'+' $ '+amount+'</td></tr></table></div><br>';
     return result;
 }
+
+
+var _headers = [{ idx: 0, key: 'ID', type: 'number', display: 'ID'},
+				{ idx: 1, key: 'type', type: 'text', display: 'Type'},
+				{ idx: 2, key: 'date', type: 'text', display: 'Date'},
+				{ idx: 3, key: 'person', type: 'text', display: 'Person Responsible'},
+				{ idx: 4, key: 'approved', type: 'text', display: 'Approved By'},
+               { idx: 5, key: 'event', type: 'text', display: 'Event'},
+               { idx: 6, key: 'income', type: 'number', display: 'Income' },
+               { idx: 7, key: 'expense', type: 'number', display: 'Expense' }];
+
+
+var sort = function (elm) {
+	if ($(elm).length) {
+		var _key = elm.dataset.key;
+		var _header = _.find(_headers, function (h, i) { return h.key == _key; });
+
+		var _idx = _header.idx;
+		var _type = _header.type;
+
+		if (_.include(['text', 'number'], _type)) {
+			$('.table .glyphicon').hide();
+
+			var _table = $('#total');
+			var _dir = 'asc';
+			var _switching = true;
+			var _rows, _i, _x, _y, _s, _c = 0;
+
+		  	while (_switching) {
+			    _switching = false;
+			    _rows = _table.find('tbody tr');
+
+			    for (_i = 0; _i < (_rows.length - 1); _i ++) {
+				    _s = false;
+				    
+				    _x = _rows[_i].getElementsByTagName('td')[_idx];
+				    _y = _rows[_i + 1].getElementsByTagName('td')[_idx];
+				      	
+				    if (_type == 'text') {
+				    	_v1 = _x.innerHTML.toLowerCase();
+				    	_v2 = _y.innerHTML.toLowerCase();
+				    }
+				    else if (_type == 'number') {
+				    	_v1 = parseFloat(_x.innerHTML);
+				    	_v2 = parseFloat(_y.innerHTML);
+				    }
+
+				    if (_dir == 'asc') {
+					    if (_v1 > _v2) {
+					   		_s= true;
+				       		break;
+			       		}
+			       	}
+					else if (_dir == 'desc') {
+				   		if (_v1 < _v2) {
+			       			_s= true;
+			       			break;
+			      		}
+					}
+				}
+				    
+				if (_s) {
+				  	_rows[_i].parentNode.insertBefore(_rows[_i + 1], _rows[_i]);
+			     	_switching = true;
+
+				   	_c ++;      
+				} 
+			    else {
+			      	if (_c == 0 && _dir == 'asc') {
+					    _dir = 'desc';
+				    	_switching = true;
+			      	}
+				}
+			}
+
+			if (_dir == 'asc') {
+				_table.find('thead th:nth-of-type(' + (_idx + 1) + ') .glyphicon-triangle-top').show();
+			}
+			else if (_dir == 'desc') {
+				_table.find('thead th:nth-of-type(' + (_idx + 1) + ') .glyphicon-triangle-bottom').show();
+			}
+		}
+	}
+}
+

@@ -20,13 +20,7 @@
     <nav>
       <ul class="nav nav-pills pull-right">
         <li role="presentation"><a href="/welcome"><span class="glyphicon glyphicon-home" style="padding-right:3px;"></span>Home</a></li>
-        <li class="nav-item dropdown active">
-            <a class="dropdown-toggle" data-toggle="dropdown" role="button">Data<span class="caret"></span></a>
-            <ul class="dropdown-menu">
-              <li style="width:100%"><a href="/addTransaction">Add New Data</a></li>
-              <li><a href="/modifyTransaction">Modify Data</a></li>
-            </ul>
-        </li>
+        <li class="active" role="presentation"><a href="/addTransaction">Add New Data</a></li>
         <li role="presentation"><a href="/logout">Log Out</a></li>
       </ul>
     </nav>
@@ -200,7 +194,7 @@
 -->
         <br>
         <h3 class="custom-label">Cheque</h3>
-        <div class="form-one-line">
+        <div class="form-one-line" style="margin:0 7.5%;">
             <label style="font-size:15px; padding-right:20px">Please enter the number of cheques involved.</label>
             <input type="number" name="numCheq" id="numCheques" value="0">
             <a onclick="addFields()" style="font-weight:bold; font-size:15px; padding-left:10px; cursor:pointer;">Load</a>

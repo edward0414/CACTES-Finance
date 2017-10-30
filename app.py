@@ -1,4 +1,7 @@
 from flask import Flask, flash, redirect, render_template, request, session, url_for, jsonify, make_response
+from datetime import datetime
+from pytz import timezone
+import pytz
 from functools import wraps
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -54,7 +57,8 @@ def welcome():
 
     db.session.close()
 
-    return render_template('welcome.html', user=session['user'], transactions=transactions, authorized=authorized, district=district, notSeen=num_row-session['seen'])
+    return render_template('welcome.html', user=session['user'], transactions=transactions, 
+        authorized=authorized, district=district, notSeen=num_row-session['seen'])
 
 
 @app.route('/addTransaction', methods=['GET', 'POST'])
@@ -107,8 +111,13 @@ def addTransaction():
             cur = db.session.query(Transaction).order_by(desc(Transaction.transactionID)).limit(1)
             transactionID = int(cur[0].transactionID) + 1
 
-            etotal = e_Count['Nickel']*0.05 + e_Count['Dime']*0.1 + e_Count['Quarter']*0.25 + e_Count['Loonie'] + e_Count['Toonie']*2 + e_Count['5bill']*5 + e_Count['10bill']*10 + e_Count['20bill']*20 + e_Count['50bill']*50 + e_Count['100bill']*100
-            itotal = i_Count['Nickel']*0.05 + i_Count['Dime']*0.1 + i_Count['Quarter']*0.25 + i_Count['Loonie'] + i_Count['Toonie']*2 + i_Count['5bill']*5 + i_Count['10bill']*10 + i_Count['20bill']*20 + i_Count['50bill']*50 + i_Count['100bill']*100
+            etotal = e_Count['Nickel']*0.05 + e_Count['Dime']*0.1 + e_Count['Quarter']*0.25 + \
+            e_Count['Loonie'] + e_Count['Toonie']*2 + e_Count['5bill']*5 + e_Count['10bill']*10 + \
+            e_Count['20bill']*20 + e_Count['50bill']*50 + e_Count['100bill']*100
+
+            itotal = i_Count['Nickel']*0.05 + i_Count['Dime']*0.1 + i_Count['Quarter']*0.25 + \
+            i_Count['Loonie'] + i_Count['Toonie']*2 + i_Count['5bill']*5 + i_Count['10bill']*10 + \
+            i_Count['20bill']*20 + i_Count['50bill']*50 + i_Count['100bill']*100
 
 
             numCheques = int(request.form['numCheq'])
@@ -120,7 +129,8 @@ def addTransaction():
 
             if numCheques == 0:
                 if etotal != expense or itotal != income:
-                    error= "Expense or income total does not match with the sum of the coin(s). Please check if you enter the right number."
+                    error= "Expense or income total does not match with the sum of the coin(s)." + \
+                    " Please check if you enter the right number."
                     raise Exception(error)
 
             else:
@@ -133,16 +143,29 @@ def addTransaction():
                         eSum += int(chequeAmount[i]) 
 
                 if eSum != expense or iSum != income:
-                    error= "Expense or income total does not match with the sum of coins and cheque(s). Please check if you enter the right number."
+                    error= "Expense or income total does not match with the sum of coins and cheque(s)." + \
+                    " Please check if you enter the right number."
                     raise Exception(error)
 
 
             for i in range(numCheques):
                 db.session.add(Cheque(chequeType[i], chequeNum[i], issuedBy[i], payTo[i], chequeAmount[i], transactionID))
 
-            db.session.add(Transaction(transType, date, staff, approved, event, income, expense))
-            db.session.add(MoneyCount("Income", i_Count['Nickel'], i_Count['Dime'], i_Count['Quarter'], i_Count['Loonie'], i_Count['Toonie'], i_Count['5bill'], i_Count['10bill'], i_Count['20bill'], i_Count['50bill'], i_Count['100bill'], itotal, transactionID))
-            db.session.add(MoneyCount("Expense", e_Count['Nickel'], e_Count['Dime'], e_Count['Quarter'], e_Count['Loonie'], e_Count['Toonie'], e_Count['5bill'], e_Count['10bill'], e_Count['20bill'], e_Count['50bill'], e_Count['100bill'], etotal, transactionID))
+
+            time_format='%Y-%m-%d %H:%M:%S %Z'
+            time = datetime.now(tz=pytz.utc)
+            time = time.astimezone(timezone('Canada/Pacific'))
+            db.session.add(Transaction(transType, date, staff, approved, event, income, expense, session['user'], 
+                time.strftime(time_format) ))
+
+            db.session.add(MoneyCount("Income", i_Count['Nickel'], i_Count['Dime'], i_Count['Quarter'], 
+                i_Count['Loonie'], i_Count['Toonie'], i_Count['5bill'], i_Count['10bill'], i_Count['20bill'], 
+                i_Count['50bill'], i_Count['100bill'], itotal, transactionID))
+
+            db.session.add(MoneyCount("Expense", e_Count['Nickel'], e_Count['Dime'], e_Count['Quarter'], 
+                e_Count['Loonie'], e_Count['Toonie'], e_Count['5bill'], e_Count['10bill'], e_Count['20bill'], 
+                e_Count['50bill'], e_Count['100bill'], etotal, transactionID))
+
             db.session.commit()
             db.session.close()
             error = "Record successfully added!"
@@ -157,18 +180,19 @@ def addTransaction():
 
 
 
-@app.route('/modifyTransaction', methods=['GET', 'POST'])
+@app.route('/modifyTransaction/<transactionID>', methods=['GET', 'POST'])
 @login_required
-def modifyTransaction():
+def modifyTransaction(transactionID):
+
     error = None
 
-    authorized = session['authorized']
-    district = session['district']
-
-    if authorized is True:
-        transactions = db.session.query(Transaction).all()
-    else:
-        transactions = db.session.query(Transaction).filter_by(transType=(district)).all()
+    transaction = db.session.query(Transaction).filter_by(transactionID=(transactionID)).first()
+    money = db.session.query(MoneyCount).filter_by(transactionID=(transactionID)).all() #list
+    for item in money:
+        if item.moneyType == "Income":
+            i_money = item
+        elif item.moneyType == "Expense":
+            e_money = item
 
 
     if request.method == 'POST':
@@ -188,7 +212,13 @@ def modifyTransaction():
                 error = "Invalid transaction ID. Please make sure you have the right transaction ID."
                 raise Exception(error)
 
-            db.session.query(Transaction).filter_by(transactionID=transID).update({"transType":transType, "date":date, "personResponsible":staff, "event":event, "income":income, "expense":expense})
+            time_format='%Y-%m-%d %H:%M:%S %Z'
+            time = datetime.now(tz=pytz.utc)
+            time = time.astimezone(timezone('Canada/Pacific'))
+
+            db.session.query(Transaction).filter_by(transactionID=transID).update({"transType":transType, 
+                "date":date, "personResponsible":staff, "event":event, "income":income, "expense":expense, 
+                "lastEdit":session['user'], "lastEditTime":time.strftime(time_format)})
 
             e_Count = {}
             #store info for the numbers of coins and bills spent (expense)
@@ -219,8 +249,13 @@ def modifyTransaction():
             i_Count["100bill"] = int(request.form['i-num100bill'])
 
 
-            etotal = e_Count['Nickel']*0.05 + e_Count['Dime']*0.1 + e_Count['Quarter']*0.25 + e_Count['Loonie'] + e_Count['Toonie']*2 + e_Count['5bill']*5 + e_Count['10bill']*10 + e_Count['20bill']*20 + e_Count['50bill']*50 + e_Count['100bill']*100
-            itotal = i_Count['Nickel']*0.05 + i_Count['Dime']*0.1 + i_Count['Quarter']*0.25 + i_Count['Loonie'] + i_Count['Toonie']*2 + i_Count['5bill']*5 + i_Count['10bill']*10 + i_Count['20bill']*20 + i_Count['50bill']*50 + i_Count['100bill']*100
+            etotal = e_Count['Nickel']*0.05 + e_Count['Dime']*0.1 + e_Count['Quarter']*0.25 + \
+            e_Count['Loonie'] + e_Count['Toonie']*2 + e_Count['5bill']*5 + e_Count['10bill']*10 + \
+            e_Count['20bill']*20 + e_Count['50bill']*50 + e_Count['100bill']*100
+
+            itotal = i_Count['Nickel']*0.05 + i_Count['Dime']*0.1 + i_Count['Quarter']*0.25 + \
+            i_Count['Loonie'] + i_Count['Toonie']*2 + i_Count['5bill']*5 + i_Count['10bill']*10 + \
+            i_Count['20bill']*20 + i_Count['50bill']*50 + i_Count['100bill']*100
 
 
 
@@ -266,7 +301,9 @@ def modifyTransaction():
 
             if numCheques == 0:
                 if etotal != expense or itotal != income:
-                    error= "Expense or income total does not match with the sum of the coin(s). Please check if you enter the right number."
+                    error= "Expense or income total does not match with the sum of the coin(s)."+ \
+                    " Please check if you enter the right number."
+
                     raise Exception(error)
             else:
                 eSum = etotal
@@ -278,7 +315,9 @@ def modifyTransaction():
                         eSum += int(chequeAmount[i]) 
 
                 if eSum != expense or iSum != income:
-                    error= "Expense or income total does not match with the sum of coins and cheque(s). Please check if you enter the right number."
+                    error= "Expense or income total does not match with the sum of coins and cheque(s)."+ \
+                    " Please check if you enter the right number."
+
                     raise Exception(error)
 
 
@@ -304,7 +343,8 @@ def modifyTransaction():
                     cheques[i].amount = chequeAmount[i]
 
                 for i in range(numCheques - len(cheques)):
-                    db.session.add(Cheque(chequeType[i+len(cheques)], chequeNum[i+len(cheques)], issuedBy[i+len(cheques)], payTo[i+len(cheques)], chequeAmount[i+len(cheques)], transID))
+                    db.session.add(Cheque(chequeType[i+len(cheques)], chequeNum[i+len(cheques)], 
+                        issuedBy[i+len(cheques)], payTo[i+len(cheques)], chequeAmount[i+len(cheques)], transID))
 
 
             elif len(cheques) > numCheques:
@@ -331,12 +371,14 @@ def modifyTransaction():
             error= "Fail to modify transaction. " + str(e.args[0])
 
 
-    return render_template('modifyTransaction.html', error=error, transactions=transactions, authorized=authorized, district=district)
+    return render_template('modifyTransaction.html', error=error, transaction=transaction, 
+        i_money=i_money, e_money=e_money, authorized=session['authorized'] ,district=session['district'])
 
 
 
 
 @app.route('/transactions/<transactionID>')
+@login_required
 def transactions(transactionID):
 
     transaction = db.session.query(Transaction).filter_by(transactionID=(transactionID)).first()
@@ -350,7 +392,9 @@ def transactions(transactionID):
                         'approvedBy': transaction.approvedBy,
                         'event': transaction.event,
                         'income': transaction.income,
-                        'expense': transaction.expense}
+                        'expense': transaction.expense,
+                        'lastEdit': transaction.lastEdit,
+                        'lastEditTime': transaction.lastEditTime}
 
     moneyCount = []
     if len(money) != 0:
@@ -436,7 +480,7 @@ def login():
             if not credential.check_password(request.form['password']):
                 error = 'Invalid credentials. Please try again.'
             else:
-                session['user'] = credential.fName
+                session['user'] = credential.fName + " " + credential.lName
                 session['email'] = credential.email
                 session['seen'] = credential.seen
                 session['logged_in'] = True

@@ -10,6 +10,7 @@
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
  
     <script type="text/javascript" src="{{ url_for('static', filename = 'welcome.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename = 'jquery-3.2.1.js') }}"></script>
@@ -21,13 +22,7 @@
             <nav>
               <ul class="nav nav-pills pull-right">
                 <li role="presentation" class="active"><a href="/welcome"><span class="glyphicon glyphicon-home" style="padding-right:3px;"></span>Home</a></li>
-                <li class="nav-item dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" role="button">Data<span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                      <li style="width:100%"><a href="/addTransaction">Add New Data</a></li>
-                      <li><a href="/modifyTransaction">Modify Data</a></li>
-                    </ul>
-                </li>
+                <li role="presentation"><a href="/addTransaction">Add New Data</a></li>
                 <li role="presentation"><a href="/logout">Log Out</a></li>
               </ul>
             </nav>
@@ -44,43 +39,44 @@
         {% endif %}
         </div>
 
+<!--
         <div class="jumbotron">
             <h1>CACTES Finance</h1>
             <p class="lead"></p>
             <br>
             <p><a class="btn btn-lg btn-success" href="/addTransaction" role="button">Add New Data</a>
             </p>
-            <p><a class="btn btn-lg btn-success" href="/modifyTransaction" role="button">Modify Data</a>
-            </p>
         </div>
+-->
 
-        <div class="row marketing">
+
             <div class="col-lg">
-                <h2 style="text-align:center;">Transactions Table</h2>
+                <h2 style="text-align:center;">Transactions</h2>
                 <br>
                 <div class="form-one-line">
                     {% if authorized %}
                     <select class="form-control" id="filterType">
                         <option disabled selected hidden>--  Search Transaction Type  --</option>
+                        <option>All</option>
                         <option>Surrey</option>
                         <option>Vancouver</option>
                         <option>Delta</option>
                         <option>Coquitlam</option>
                         <option>Administration</option>
-                        <option>All</option>
                     </select>
                     {% endif %}
                     <select class="form-control" id="filterYear">
                         <option disabled selected hidden>--  Search Year  --</option>
+                        <option>All</option>
                         <option>2018</option>
                         <option>2017</option>
                         <option>2016</option>
                         <option>2015</option>
                         <option>2014</option>
-                        <option>All</option>
                     </select>
                     <select class="form-control" id="filterMonth">
                         <option disabled selected hidden>--  Search Month  --</option>
+                        <option>All</option>
                         <option>January</option>
                         <option>February</option>
                         <option>March</option>
@@ -93,21 +89,28 @@
                         <option>October</option>
                         <option>November</option>
                         <option>December</option>
-                        <option>All</option>
                     </select>
                 </div>
                 <br>
                 
                 <table id="total" class="table table-bordered table-hover table-responsive">
                  <thead class="thead-default">
-                    <th>ID</th>
-                     <th>Type</th>
-                    <th>Date</th>
-                    <th>Person Responsible</th>
-                     <th>Approved By</th>
-                    <th>Event</th>
-                    <th>Income</th>
-                    <th>Expense</th>
+                    <th class="sortable" data-key="ID" style="cursor:pointer;" onclick="sort(this)">ID<span class="glyphicon glyphicon-triangle-bottom" style="margin-left:5px;display:none;"></span><span class="glyphicon glyphicon-triangle-top" style="margin-left:5px;display:none;"></span></th>
+                     
+                     <th class="sortable" data-key="type" style="cursor:pointer;" onclick="sort(this)">Type<span class="glyphicon glyphicon-triangle-bottom" style="margin-left:5px;display:none;"></span><span class="glyphicon glyphicon-triangle-top" style="margin-left:5px;display:none;"></span></th>
+                     
+                    <th class="sortable" data-key="date" style="cursor:pointer;" onclick="sort(this)">Date<span class="glyphicon glyphicon-triangle-bottom" style="margin-left:5px;display:none;"></span><span class="glyphicon glyphicon-triangle-top" style="margin-left:5px;display:none;"></span></th>
+                     
+                    <th class="sortable" data-key="person" style="cursor:pointer;" onclick="sort(this)">Person Responsible<span class="glyphicon glyphicon-triangle-bottom" style="margin-left:5px;display:none;"></span><span class="glyphicon glyphicon-triangle-top" style="margin-left:5px;display:none;"></span></th>
+                     
+                     <th class="sortable" data-key="approved" style="cursor:pointer;" onclick="sort(this)">Approved By<span class="glyphicon glyphicon-triangle-bottom" style="margin-left:5px;display:none;"></span><span class="glyphicon glyphicon-triangle-top" style="margin-left:5px;display:none;"></span></th>
+                     
+                    <th class="sortable" data-key="event" style="cursor:pointer;" onclick="sort(this)">Event<span class="glyphicon glyphicon-triangle-bottom" style="margin-left:5px;display:none;"></span><span class="glyphicon glyphicon-triangle-top" style="margin-left:5px;display:none;"></span></th>
+                     
+                    <th class="sortable" data-key="income" style="cursor:pointer;" onclick="sort(this)">Income<span class="glyphicon glyphicon-triangle-bottom" style="margin-left:5px;display:none;"></span><span class="glyphicon glyphicon-triangle-top" style="margin-left:5px;display:none;"></span></th>
+                     
+                    <th class="sortable" data-key="expense" style="cursor:pointer;" onclick="sort(this)">Expense<span class="glyphicon glyphicon-triangle-bottom" style="margin-left:5px;display:none;"></span><span class="glyphicon glyphicon-triangle-top" style="margin-left:5px;display:none;"></span></th>
+                     
                  </thead>
 
                     <tbody id="transactions">
@@ -167,7 +170,7 @@
                     <div class="modal-content">
                       <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                        <h3 style="padding-left:10px">Transaction</h3>
+                        <h3 style="padding:0 10px">Transaction <span id="edit" style="font-size:62%; color:#D3D3D3; padding:0 10px;"></span></h3>
                       </div>
                       <div class="modal-body">
 
@@ -291,14 +294,15 @@
 
                       </div>
                       <div class="modal-footer">
-                        <button class="btn btn-primary btn-lg" data-dismiss="modal" aria-hidden="true">Close</button>
+                        <button id="modify" class="btn btn-primary btn-lg">Modify</button>
+                        <button class="btn btn-outline btn-primary btn-lg" data-dismiss="modal" aria-hidden="true">Close</button>
                       </div>
                     </div>
                   </div>
                 </div>
                 
             </div>
-        </div>
+    
 
 
         <footer class="footer">
