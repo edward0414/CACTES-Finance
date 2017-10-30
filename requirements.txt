@@ -1,4 +1,4 @@
-lick==6.7
+click==6.7
 Flask==0.12.2
 Flask-MySQL==1.4.0
 Flask-SQLAlchemy==2.2
