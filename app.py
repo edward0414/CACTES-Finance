@@ -119,13 +119,13 @@ def addTransaction():
             i_Count['Loonie'] + i_Count['Toonie']*2 + i_Count['5bill']*5 + i_Count['10bill']*10 + \
             i_Count['20bill']*20 + i_Count['50bill']*50 + i_Count['100bill']*100
 
-
             numCheques = int(request.form['numCheq'])
             chequeType = request.form.getlist('chequeType')
             chequeNum = request.form.getlist('chequeNum')
             issuedBy = request.form.getlist('issuedBy')
             payTo = request.form.getlist('payTo')
             chequeAmount = request.form.getlist('chequeAmount')
+
 
             if numCheques == 0:
                 if etotal != expense or itotal != income:
