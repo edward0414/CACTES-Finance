@@ -408,7 +408,7 @@ function updateBalance() {
 function buildCheque(num, type, cheqNum, issued, paid, amount) {
 //helper function that builds the html box
     
-    var result = '<br><div style="padding:0 4%;"><table class="table table-bordered table-hover"><tr><td class="heading" colspan="4" style="font-size:20px;font-weight:bold;">Cheque '+num+'</td></tr><tr><td style="font-size:20px;font-weight:bold;">Type</td><td class="data-result">'+type+'</td><td style="font-size:20px;font-weight:bold;">Issued By</td><td class="data-result">'+issued+'</td></tr><tr><td style="font-size:20px;font-weight:bold;">Cheque #</td><td class="data-result">'+cheqNum+'</td><td style="font-size:20px;font-weight:bold;">Pay To</td><td class="data-result">'+paid+'</td></tr><tr><td colspan="1" style="font-size:20px;font-weight:bold;">Amount</td><td colspan="3" class="data-result">'+' $ '+amount+'</td></tr></table></div><br>';
+    var result = '<div style="padding:0 4%;"><table class="table table-bordered table-hover"><tr><td class="heading" colspan="4" style="font-size:20px;font-weight:bold;">Cheque '+num+'</td></tr><tr><td style="font-size:20px;font-weight:bold;">Type</td><td class="data-result">'+type+'</td><td style="font-size:20px;font-weight:bold;">Issued By</td><td class="data-result">'+issued+'</td></tr><tr><td style="font-size:20px;font-weight:bold;">Cheque #</td><td class="data-result">'+cheqNum+'</td><td style="font-size:20px;font-weight:bold;">Pay To</td><td class="data-result">'+paid+'</td></tr><tr><td colspan="1" style="font-size:20px;font-weight:bold;">Amount</td><td colspan="3" class="data-result">'+' $ '+amount+'</td></tr></table></div><br>';
     return result;
 }
 

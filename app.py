@@ -46,19 +46,17 @@ def welcome():
     authorized = session['authorized']
     district = session['district']
 
-    global num_row
-
     if authorized is True:
         transactions = db.session.query(Transaction).all()
-        num_row = len(transactions)
+        session['notSeen'] = len(transactions) - session['seen']
     else:
         transactions = db.session.query(Transaction).filter_by(transType=(district)).all()
-        num_row = len(transactions)
+        session['notSeen'] = len(transactions) - session['seen']
 
     db.session.close()
 
     return render_template('welcome.html', user=session['user'], transactions=transactions, 
-        authorized=authorized, district=district, notSeen=num_row-session['seen'])
+        authorized=authorized, district=district, notSeen=session['notSeen'])
 
 
 @app.route('/addTransaction', methods=['GET', 'POST'])
@@ -483,6 +481,7 @@ def login():
                 session['user'] = credential.fName + " " + credential.lName
                 session['email'] = credential.email
                 session['seen'] = credential.seen
+                session['notSeen'] = 0
                 session['logged_in'] = True
                 session['authorized'] = (credential.rank != 'Junior')
                 session['district'] = credential.district
@@ -498,7 +497,7 @@ def login():
 @app.route('/logout')
 def logout():
     user = db.session.query(Staff).filter_by(email=session['email']).first()
-    user.seen = num_row
+    user.seen = session['notSeen'] + session['seen']
     db.session.commit()
     db.session.close()
 
@@ -507,6 +506,7 @@ def logout():
     session.pop('authorized', None)
     session.pop('district', None)
     session.pop('seen', None)
+    session.pop('notSeen', None)
     session.pop('email', None)
     flash('You have just logged out')
     return redirect(url_for('home'))
