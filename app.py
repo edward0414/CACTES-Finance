@@ -104,10 +104,14 @@ def addTransaction():
             i_Count["100bill"] = int(request.form['i-num100bill'])
 
 
+            exist = db.session.query(Transaction).order_by(desc(Transaction.transaction_id)).limit(1).scalar() is not None
 
+            if not exist:
+                transactionID = 1
+            else:
+                cur = db.session.query(Transaction).order_by(desc(Transaction.transaction_id)).limit(1)
+                transactionID = int(cur[0].transaction_id) + 1
 
-            cur = db.session.query(Transaction).order_by(desc(Transaction.transactionID)).limit(1)
-            transactionID = int(cur[0].transactionID) + 1
 
             etotal = e_Count['Nickel']*0.05 + e_Count['Dime']*0.1 + e_Count['Quarter']*0.25 + \
             e_Count['Loonie'] + e_Count['Toonie']*2 + e_Count['5bill']*5 + e_Count['10bill']*10 + \
@@ -116,6 +120,8 @@ def addTransaction():
             itotal = i_Count['Nickel']*0.05 + i_Count['Dime']*0.1 + i_Count['Quarter']*0.25 + \
             i_Count['Loonie'] + i_Count['Toonie']*2 + i_Count['5bill']*5 + i_Count['10bill']*10 + \
             i_Count['20bill']*20 + i_Count['50bill']*50 + i_Count['100bill']*100
+
+
 
             numCheques = int(request.form['numCheq'])
             chequeType = request.form.getlist('chequeType')
@@ -153,8 +159,10 @@ def addTransaction():
             time_format='%Y-%m-%d %H:%M:%S %Z'
             time = datetime.now(tz=pytz.utc)
             time = time.astimezone(timezone('Canada/Pacific'))
+
             db.session.add(Transaction(transType, date, staff, approved, event, income, expense, session['user'], 
                 time.strftime(time_format) ))
+
 
             db.session.add(MoneyCount("Income", i_Count['Nickel'], i_Count['Dime'], i_Count['Quarter'], 
                 i_Count['Loonie'], i_Count['Toonie'], i_Count['5bill'], i_Count['10bill'], i_Count['20bill'], 
@@ -184,18 +192,18 @@ def modifyTransaction(transactionID):
 
     error = None
 
-    transaction = db.session.query(Transaction).filter_by(transactionID=(transactionID)).first()
-    money = db.session.query(MoneyCount).filter_by(transactionID=(transactionID)).all() #list
+    transaction = db.session.query(Transaction).filter_by(transaction_id=(transactionID)).first()
+    money = db.session.query(MoneyCount).filter_by(transaction_id=(transactionID)).all() #list
     for item in money:
-        if item.moneyType == "Income":
+        if item.money_type == "Income":
             i_money = item
-        elif item.moneyType == "Expense":
+        elif item.money_type == "Expense":
             e_money = item
 
 
     if request.method == 'POST':
         try:
-            transID = request.form['id']
+            transID = transactionID
             transType = request.form['type']
             date = request.form['date']
             staff = request.form['staff']
@@ -204,7 +212,7 @@ def modifyTransaction(transactionID):
             income = int(request.form['income'])
             expense = int(request.form['expense'])
 
-            result = db.session.query(Transaction).filter_by(transactionID=transID).first()
+            result = db.session.query(Transaction).filter_by(transaction_id=transID).first()
 
             if result is None:
                 error = "Invalid transaction ID. Please make sure you have the right transaction ID."
@@ -214,9 +222,9 @@ def modifyTransaction(transactionID):
             time = datetime.now(tz=pytz.utc)
             time = time.astimezone(timezone('Canada/Pacific'))
 
-            db.session.query(Transaction).filter_by(transactionID=transID).update({"transType":transType, 
-                "date":date, "personResponsible":staff, "event":event, "income":income, "expense":expense, 
-                "lastEdit":session['user'], "lastEditTime":time.strftime(time_format)})
+            db.session.query(Transaction).filter_by(transaction_id=transID).update({"trans_type":transType, 
+                "date":date, "person_responsible":staff, "approved_by":approved, "event":event, "income":income, "expense":expense, 
+                "last_edit":session['user'], "last_edit_time":time.strftime(time_format)})
 
             e_Count = {}
             #store info for the numbers of coins and bills spent (expense)
@@ -259,32 +267,32 @@ def modifyTransaction(transactionID):
 
 
 
-            moneyCounts = db.session.query(MoneyCount).filter_by(transactionID=transID).all()
+            moneyCounts = db.session.query(MoneyCount).filter_by(transaction_id=transID).all()
             for item in moneyCounts:
-                if item.moneyType == "Income":
-                    item.numNickel = i_Count['Nickel']
-                    item.numDime = i_Count['Dime']
-                    item.numQuarter = i_Count['Quarter']
-                    item.numLoonie = i_Count['Loonie']
-                    item.numToonie = i_Count['Toonie']
-                    item.num5bill = i_Count['5bill']
-                    item.num10bill = i_Count['10bill']
-                    item.num20bill = i_Count['20bill']
-                    item.num50bill = i_Count['50bill']
-                    item.num100bill = i_Count['100bill']
+                if item.money_type == "Income":
+                    item.nickel = i_Count['Nickel']
+                    item.dime = i_Count['Dime']
+                    item.quarter = i_Count['Quarter']
+                    item.loonie = i_Count['Loonie']
+                    item.toonie = i_Count['Toonie']
+                    item.bill5 = i_Count['5bill']
+                    item.bill10 = i_Count['10bill']
+                    item.bill20 = i_Count['20bill']
+                    item.bill50 = i_Count['50bill']
+                    item.bill100 = i_Count['100bill']
                     item.total = itotal
 
-                elif item.moneyType == "Expense":
-                    item.numNickel = e_Count['Nickel']
-                    item.numDime = e_Count['Dime']
-                    item.numQuarter = e_Count['Quarter']
-                    item.numLoonie = e_Count['Loonie']
-                    item.numToonie = e_Count['Toonie']
-                    item.num5bill = e_Count['5bill']
-                    item.num10bill = e_Count['10bill']
-                    item.num20bill = e_Count['20bill']
-                    item.num50bill = e_Count['50bill']
-                    item.num100bill = e_Count['100bill']
+                elif item.money_type == "Expense":
+                    item.nickel = e_Count['Nickel']
+                    item.dime = e_Count['Dime']
+                    item.quarter = e_Count['Quarter']
+                    item.loonie = e_Count['Loonie']
+                    item.toonie = e_Count['Toonie']
+                    item.bill5 = e_Count['5bill']
+                    item.bill10 = e_Count['10bill']
+                    item.bill20 = e_Count['20bill']
+                    item.bill50 = e_Count['50bill']
+                    item.bill100 = e_Count['100bill']
                     item.total = etotal
 
       
@@ -319,25 +327,23 @@ def modifyTransaction(transactionID):
                     raise Exception(error)
 
 
-            cheques = db.session.query(Cheque).filter_by(transactionID=transID).all()
-
-            print("Cheque handling")
+            cheques = db.session.query(Cheque).filter_by(transaction_id=transID).all()
 
             if len(cheques) == numCheques:
                 for i in range(numCheques):
-                    cheques[i].chequeType = chequeType[i]
-                    cheques[i].chequeNum = chequeNum[i]
-                    cheques[i].issuedBy = issuedBy[i]
-                    cheques[i].payTo = payTo[i]
+                    cheques[i].cheque_type = chequeType[i]
+                    cheques[i].cheque_num = chequeNum[i]
+                    cheques[i].issued_by = issuedBy[i]
+                    cheques[i].pay_to = payTo[i]
                     cheques[i].amount = chequeAmount[i]
             
 
             elif len(cheques) < numCheques:
                 for i in range(len(cheques)):
-                    cheques[i].chequeType = chequeType[i]
-                    cheques[i].chequeNum = chequeNum[i]
-                    cheques[i].issuedBy = issuedBy[i]
-                    cheques[i].payTo = payTo[i]
+                    cheques[i].cheque_type = chequeType[i]
+                    cheques[i].cheque_num = chequeNum[i]
+                    cheques[i].issued_by = issuedBy[i]
+                    cheques[i].pay_to = payTo[i]
                     cheques[i].amount = chequeAmount[i]
 
                 for i in range(numCheques - len(cheques)):
@@ -347,10 +353,10 @@ def modifyTransaction(transactionID):
 
             elif len(cheques) > numCheques:
                 for i in range(numCheques):
-                    cheques[i].chequeType = chequeType[i]
-                    cheques[i].chequeNum = chequeNum[i]
-                    cheques[i].issuedBy = issuedBy[i]
-                    cheques[i].payTo = payTo[i]
+                    cheques[i].cheque_type = chequeType[i]
+                    cheques[i].cheque_num = chequeNum[i]
+                    cheques[i].issued_by = issuedBy[i]
+                    cheques[i].pay_to = payTo[i]
                     cheques[i].amount = chequeAmount[i]
 
                 for i in range(len(cheques) - numCheques):
@@ -379,57 +385,57 @@ def modifyTransaction(transactionID):
 @login_required
 def transactions(transactionID):
 
-    transaction = db.session.query(Transaction).filter_by(transactionID=(transactionID)).first()
-    money = db.session.query(MoneyCount).filter_by(transactionID=(transactionID)).all() #list
-    cheques = db.session.query(Cheque).filter_by(transactionID=(transactionID)).all() #list
+    transaction = db.session.query(Transaction).filter_by(transaction_id=(transactionID)).first()
+    money = db.session.query(MoneyCount).filter_by(transaction_id=(transactionID)).all() #list
+    cheques = db.session.query(Cheque).filter_by(transaction_id=(transactionID)).all() #list
 
 
-    transactionInfo = {'transType': transaction.transType,
+    transactionInfo = {'transType': transaction.trans_type,
                         'date': transaction.date,
-                        'person': transaction.personResponsible,
-                        'approvedBy': transaction.approvedBy,
+                        'person': transaction.person_responsible,
+                        'approvedBy': transaction.approved_by,
                         'event': transaction.event,
                         'income': transaction.income,
                         'expense': transaction.expense,
-                        'lastEdit': transaction.lastEdit,
-                        'lastEditTime': transaction.lastEditTime}
+                        'lastEdit': transaction.last_edit,
+                        'lastEditTime': transaction.last_edit_time}
 
     moneyCount = []
     if len(money) != 0:
-        moneyCount.append({"moneyType":money[0].moneyType,
-                                "numNickel":money[0].numNickel,
-                                "numDime":money[0].numDime,
-                                "numQuarter":money[0].numQuarter,
-                                "numLoonie":money[0].numLoonie,
-                                "numToonie":money[0].numToonie,
-                                "num5bill":money[0].num5bill,
-                                "num10bill":money[0].num10bill,
-                                "num20bill":money[0].num20bill,
-                                "num50bill":money[0].num50bill,
-                                "num100bill":money[0].num100bill,
+        moneyCount.append({"moneyType":money[0].money_type,
+                                "numNickel":money[0].nickel,
+                                "numDime":money[0].dime,
+                                "numQuarter":money[0].quarter,
+                                "numLoonie":money[0].loonie,
+                                "numToonie":money[0].toonie,
+                                "num5bill":money[0].bill5,
+                                "num10bill":money[0].bill10,
+                                "num20bill":money[0].bill20,
+                                "num50bill":money[0].bill50,
+                                "num100bill":money[0].bill100,
                                 "total":money[0].total})
 
-        moneyCount.append({"moneyType":money[1].moneyType,
-                                "numNickel":money[1].numNickel,
-                                "numDime":money[1].numDime,
-                                "numQuarter":money[1].numQuarter,
-                                "numLoonie":money[1].numLoonie,
-                                "numToonie":money[1].numToonie,
-                                "num5bill":money[1].num5bill,
-                                "num10bill":money[1].num10bill,
-                                "num20bill":money[1].num20bill,
-                                "num50bill":money[1].num50bill,
-                                "num100bill":money[1].num100bill,
+        moneyCount.append({"moneyType":money[1].money_type,
+                                "numNickel":money[1].nickel,
+                                "numDime":money[1].dime,
+                                "numQuarter":money[1].quarter,
+                                "numLoonie":money[1].loonie,
+                                "numToonie":money[1].toonie,
+                                "num5bill":money[1].bill5,
+                                "num10bill":money[1].bill10,
+                                "num20bill":money[1].bill20,
+                                "num50bill":money[1].bill50,
+                                "num100bill":money[1].bill100,
                                 "total":money[1].total})
 
 
     cheque = []
     if len(cheques) != 0:
         for i in range(len(cheques)):
-            cheque.append({"chequeType":cheques[i].chequeType,
-                                "chequeNum":cheques[i].chequeNum,
-                                "issuedBy":cheques[i].issuedBy,
-                                "payTo":cheques[i].payTo,
+            cheque.append({"chequeType":cheques[i].cheque_type,
+                                "chequeNum":cheques[i].cheque_num,
+                                "issuedBy":cheques[i].issued_by,
+                                "payTo":cheques[i].pay_to,
                                 "amount":cheques[i].amount})
 
 
@@ -478,7 +484,7 @@ def login():
             if not credential.check_password(request.form['password']):
                 error = 'Invalid credentials. Please try again.'
             else:
-                session['user'] = credential.fName + " " + credential.lName
+                session['user'] = credential.f_name + " " + credential.l_name
                 session['email'] = credential.email
                 session['seen'] = credential.seen
                 session['notSeen'] = 0

@@ -117,11 +117,11 @@
                     {% if authorized %}
                     {% for row in transactions %}
                     <tr data-toggle="modal" data-target="#transInfo" style="cursor:pointer;">
-                        <td class="id">{{row["transactionID"]}}</td>
-                        <td class="type">{{row["transType"]}}</td>
+                        <td class="id">{{row["transaction_id"]}}</td>
+                        <td class="type">{{row["trans_type"]}}</td>
                        <td class="date">{{row["date"]}}</td>
-                       <td class="staff"> {{row["personResponsible"]}}</td>
-                        <td class="approved">{{row["approvedBy"]}}</td>
+                       <td class="staff"> {{row["person_responsible"]}}</td>
+                        <td class="approved">{{row["approved_by"]}}</td>
                        <td class="event">{{row["event"]}}</td>
                        <td class="income">{{row["income"]}}</td>
                        <td class="expense"> {{row["expense"]}}</td>
@@ -130,11 +130,11 @@
                     {% else %}
                     {% for row in transactions %}
                     <tr data-toggle="modal" data-target="#transInfo" style="cursor:pointer;">
-                        <td class="id">{{row["transactionID"]}}</td>
+                        <td class="id">{{row["transaction_id"]}}</td>
                         <td class="type">{{ district }}</td>
                        <td class="date">{{row["date"]}}</td>
-                       <td class="staff"> {{row["personResponsible"]}}</td>
-                        <td class="approved">{{row["approvedBy"]}}</td>
+                       <td class="staff"> {{row["person_responsible"]}}</td>
+                        <td class="approved">{{row["approved_by"]}}</td>
                        <td class="event">{{row["event"]}}</td>
                        <td class="income">{{row["income"]}}</td>
                        <td class="expense"> {{row["expense"]}}</td>

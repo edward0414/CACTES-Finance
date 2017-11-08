@@ -42,9 +42,8 @@
         <div class="jumbotron">
             <h2 style="font-weight:bold;">Modify Data</h2>
             <form class="form-signin" action="" method="post">
-
-                <h3 class="custom-label">Transaction ID</h3>
-                <input type="number" name="id" class="form-control" value="{{ transaction["transactionID"] }}" required>
+                <br>
+                <h3 class="custom-label">Transaction ID: {{ transaction["transaction_id"] }}</h3>
                 <h3 class="custom-label">Type</h3>
                 {% if authorized %}
                 <select class="form-control" name="type" required>
@@ -88,9 +87,9 @@
                 <h3 class="custom-label">Date</h3>
                 <input type="date" name="date" class="form-control" value="{{ transaction["date"] }}" required>
                 <h3 class="custom-label">Person Responsible</h3>
-                <input type="text" name="staff" class="form-control" value="{{ transaction["personResponsible"] }}" required>
+                <input type="text" name="staff" class="form-control" value="{{ transaction["person_responsible"] }}" required>
                 <h3 class="custom-label">Approved By</h3>
-                <input type="text" name="approved" class="form-control" value="{{ transaction["approvedBy"] }}" required>
+                <input type="text" name="approved" class="form-control" value="{{ transaction["approved_by"] }}" required>
                 <h3 class="custom-label">Event</h3>
                 <input type="text" name="event" class="form-control" value="{{ transaction["event"] }}" required>
                 <div class="form-one-line" style="padding-left:7.5%;">
@@ -99,46 +98,46 @@
                         <div class="form-one-column">
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:58px">$5</label>
-                                <input type="number" name="i-num5bill" class="form-control" style="width:75px;" value="{{ i_money["num5bill"] }}" required>
+                                <input type="number" name="i-num5bill" class="form-control" style="width:75px;" value="{{ i_money["bill5"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:47px">$10</label>
-                                <input type="number" name="i-num10bill" class="form-control" style="width:75px;" value="{{ i_money["num10bill"] }}" required>
+                                <input type="number" name="i-num10bill" class="form-control" style="width:75px;" value="{{ i_money["bill10"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:47px">$20</label>
-                                <input type="number" name="i-num20bill" class="form-control" style="width:75px;" value="{{ i_money["num20bill"] }}" required>
+                                <input type="number" name="i-num20bill" class="form-control" style="width:75px;" value="{{ i_money["bill20"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:47px">$50</label>
-                                <input type="number" name="i-num50bill" class="form-control" style="width:75px;" value="{{ i_money["num50bill"] }}" required>
+                                <input type="number" name="i-num50bill" class="form-control" style="width:75px;" value="{{ i_money["bill50"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:36px">$100</label>
-                                <input type="number" name="i-num100bill" class="form-control" style="width:75px;" value="{{ i_money["num100bill"] }}" required>
+                                <input type="number" name="i-num100bill" class="form-control" style="width:75px;" value="{{ i_money["bill100"] }}" required>
                             </div>
                         </div>
                         <h3 class="custom-label">Income Coins Count</h3>
                         <div class="form-one-column">
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:30px">$0.05</label>
-                                <input type="number" name="i-numNickel" class="form-control" style="width:75px;" value="{{ i_money["numNickel"] }}" required>
+                                <input type="number" name="i-numNickel" class="form-control" style="width:75px;" value="{{ i_money["nickel"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:30px">$0.10</label>
-                                <input type="number" name="i-numDime" class="form-control" style="width:75px;" value="{{ i_money["numDime"] }}" required>
+                                <input type="number" name="i-numDime" class="form-control" style="width:75px;" value="{{ i_money["dime"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:30px">$0.25</label>
-                                <input type="number" name="i-numQuarter" class="form-control" style="width:75px;" value="{{ i_money["numQuarter"] }}" required>
+                                <input type="number" name="i-numQuarter" class="form-control" style="width:75px;" value="{{ i_money["quarter"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:30px">$1.00</label>
-                                <input type="number" name="i-numLoonie" class="form-control" style="width:75px;" value="{{ i_money["numLoonie"] }}" required>
+                                <input type="number" name="i-numLoonie" class="form-control" style="width:75px;" value="{{ i_money["loonie"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:30px">$2.00</label>
-                                <input type="number" name="i-numToonie" class="form-control" style="width:75px;" value="{{ i_money["numToonie"] }}" required>
+                                <input type="number" name="i-numToonie" class="form-control" style="width:75px;" value="{{ i_money["toonie"] }}" required>
                             </div>
                         </div>
 <!--
@@ -151,46 +150,46 @@
                         <div class="form-one-column">
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:58px">$5</label>
-                                <input type="number" name="e-num5bill" class="form-control" style="width:75px;" value="{{ e_money["num5bill"] }}" required>
+                                <input type="number" name="e-num5bill" class="form-control" style="width:75px;" value="{{ e_money["bill5"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:47px">$10</label>
-                                <input type="number" name="e-num10bill" class="form-control" style="width:75px;" value="{{ e_money["num10bill"] }}" required>
+                                <input type="number" name="e-num10bill" class="form-control" style="width:75px;" value="{{ e_money["bill10"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:47px">$20</label>
-                                <input type="number" name="e-num20bill" class="form-control" style="width:75px;" value="{{ e_money["num20bill"] }}" required>
+                                <input type="number" name="e-num20bill" class="form-control" style="width:75px;" value="{{ e_money["bill20"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:47px">$50</label>
-                                <input type="number" name="e-num50bill" class="form-control" style="width:75px;" value="{{ e_money["num50bill"] }}" required>
+                                <input type="number" name="e-num50bill" class="form-control" style="width:75px;" value="{{ e_money["bill50"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:36px">$100</label>
-                                <input type="number" name="e-num100bill" class="form-control" style="width:75px;" value="{{ e_money["num100bill"] }}" required>
+                                <input type="number" name="e-num100bill" class="form-control" style="width:75px;" value="{{ e_money["bill100"] }}" required>
                             </div>
                         </div>
                         <h3 class="custom-label">Expense Coins Count</h3>
                         <div class="form-one-column">
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:30px">$0.05</label>
-                                <input type="number" name="e-numNickel" class="form-control" style="width:75px;" value="{{ e_money["numNickel"] }}" required>
+                                <input type="number" name="e-numNickel" class="form-control" style="width:75px;" value="{{ e_money["nickel"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:30px">$0.10</label>
-                                <input type="number" name="e-numDime" class="form-control" style="width:75px;" value="{{ e_money["numDime"] }}" required>
+                                <input type="number" name="e-numDime" class="form-control" style="width:75px;" value="{{ e_money["dime"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:30px">$0.25</label>
-                                <input type="number" name="e-numQuarter" class="form-control" style="width:75px;" value="{{ e_money["numQuarter"] }}" required>
+                                <input type="number" name="e-numQuarter" class="form-control" style="width:75px;" value="{{ e_money["quarter"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:30px">$1.00</label>
-                                <input type="number" name="e-numLoonie" class="form-control" style="width:75px;" value="{{ e_money["numLoonie"] }}" required>
+                                <input type="number" name="e-numLoonie" class="form-control" style="width:75px;" value="{{ e_money["loonie"] }}" required>
                             </div>
                             <div class="form-one-line">
                                 <label style="font-size:20px; padding-right:30px">$2.00</label>
-                                <input type="number" name="e-numToonie" class="form-control" style="width:75px;" value="{{ e_money["numToonie"] }}" required>
+                                <input type="number" name="e-numToonie" class="form-control" style="width:75px;" value="{{ e_money["toonie"] }}" required>
                             </div>
                         </div>
 <!--
