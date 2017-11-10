@@ -7,12 +7,12 @@ class Staff(db.Model):
 	staff_id = db.Column(db.Integer, primary_key=True)
 	f_name = db.Column(db.String(20), nullable=False)
 	l_name = db.Column(db.String(20), nullable=False)
-	email = db.Column(db.String(60), nullable=False)
+	email = db.Column(db.String(100), nullable=False)
 	password = db.Column(db.String(120), nullable=False)
 	rank = db.Column(db.String(25), nullable=False)
 	district = db.Column(db.String(25), nullable=False) 
 	position = db.Column(db.String(25), nullable=False)
-	school = db.Column(db.String(25), nullable=False)
+	school = db.Column(db.String(50), nullable=False)
 	seen = db.Column(db.Integer, nullable=False)
 
 	def __init__(self, fName, lName, email, password, rank, district, position, school):
@@ -67,7 +67,7 @@ class MoneyCount(db.Model):
 	bill20 = db.Column(db.Integer, nullable=False)
 	bill50 = db.Column(db.Integer, nullable=False)
 	bill100 = db.Column(db.Integer, nullable=False)
-	total = db.Column(db.Integer, nullable=False)
+	total = db.Column(db.Numeric(10,2), nullable=False)
 	transaction_id = db.Column(db.Integer, db.ForeignKey('transaction.transaction_id'), nullable=False)
 
 	def __init__(self, moneyType, numNickel, numDime, numQuarter, numLoonie, numToonie, num5bill, num10bill, num20bill, num50bill, num100bill, total, transactionID):

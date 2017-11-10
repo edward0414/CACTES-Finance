@@ -395,8 +395,8 @@ def transactions(transactionID):
                         'person': transaction.person_responsible,
                         'approvedBy': transaction.approved_by,
                         'event': transaction.event,
-                        'income': transaction.income,
-                        'expense': transaction.expense,
+                        'income': str(transaction.income),
+                        'expense': str(transaction.expense),
                         'lastEdit': transaction.last_edit,
                         'lastEditTime': transaction.last_edit_time}
 
@@ -413,7 +413,7 @@ def transactions(transactionID):
                                 "num20bill":money[0].bill20,
                                 "num50bill":money[0].bill50,
                                 "num100bill":money[0].bill100,
-                                "total":money[0].total})
+                                "total":str(money[0].total)})
 
         moneyCount.append({"moneyType":money[1].money_type,
                                 "numNickel":money[1].nickel,
@@ -426,7 +426,7 @@ def transactions(transactionID):
                                 "num20bill":money[1].bill20,
                                 "num50bill":money[1].bill50,
                                 "num100bill":money[1].bill100,
-                                "total":money[1].total})
+                                "total":str(money[1].total)})
 
 
     cheque = []
@@ -436,7 +436,7 @@ def transactions(transactionID):
                                 "chequeNum":cheques[i].cheque_num,
                                 "issuedBy":cheques[i].issued_by,
                                 "payTo":cheques[i].pay_to,
-                                "amount":cheques[i].amount})
+                                "amount":str(cheques[i].amount)})
 
 
     db.session.close()
