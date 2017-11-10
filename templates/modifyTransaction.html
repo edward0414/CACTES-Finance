@@ -211,11 +211,11 @@
                 <div class="form-one-line" style="padding-left:7.5%;">
                     <div class="form-one-column" style="width:50%;">
                     <h3 class="custom-label">Income Total</h3>
-                    <input type="number" name="income" class="form-control" style="width:175px;" value="{{ transaction["income"] }}" required>
+                    <input type="number" step="0.01" min="0" name="income" class="form-control" style="width:175px;" value="{{ transaction["income"] }}" required>
                     </div>
                     <div class="form-one-column" style="padding-left:5%">
                     <h3 class="custom-label">Expense Total</h3>
-                    <input type="number" name="expense" class="form-control" style="width:175px;" value="{{ transaction["expense"] }}" required>
+                    <input type="number" step="0.01" min="0" name="expense" class="form-control" style="width:175px;" value="{{ transaction["expense"] }}" required>
                     </div>
                 </div>
                 <br>
