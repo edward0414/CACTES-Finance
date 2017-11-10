@@ -326,8 +326,8 @@ function updateBalance() {
     var etotal=0;
     for (i=1;i<l+1;i++) {
         if (document.getElementById("total").rows[i].style.display != "none") {
-            itotal += parseInt(document.getElementById("total").rows[i].cells[6].innerHTML, 10);
-            etotal += parseInt(document.getElementById("total").rows[i].cells[7].innerHTML, 10);
+            itotal += parseFloat(document.getElementById("total").rows[i].cells[6].innerHTML, 10);
+            etotal += parseFloat(document.getElementById("total").rows[i].cells[7].innerHTML, 10);
         }
     }
     document.getElementById("iTotal").innerHTML = "$ " + itotal;
