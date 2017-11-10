@@ -39,7 +39,7 @@ class Cheque(db.Model):
 	cheque_num = db.Column(db.String(20), nullable=False)
 	issued_by = db.Column(db.String(50), nullable=False)
 	pay_to = db.Column(db.String(50), nullable=False)
-	amount = db.Column(db.Integer, nullable=False)
+	amount = db.Column(db.Numeric(10,2), nullable=False)
 	transaction_id = db.Column(db.Integer, db.ForeignKey('transaction.transaction_id'), nullable=True)
 
 	def __init__(self, chequeType, chequeNum, issuedBy, payTo, amount, transactionID):
@@ -96,8 +96,8 @@ class Transaction(db.Model):
 	person_responsible = db.Column(db.String(50), nullable=False)
 	approved_by = db.Column(db.String(50), nullable=False)
 	event = db.Column(db.String(100), nullable=False)
-	income = db.Column(db.Money, nullable=False)
-	expense = db.Column(db.Money, nullable=False)
+	income = db.Column(db.Numeric(10,2), nullable=False)
+	expense = db.Column(db.Numeric(10,2), nullable=False)
 	last_edit = db.Column(db.String(40), nullable=False)
 	last_edit_time = db.Column(db.Text, nullable=False)
 	money_count_id = db.relationship('MoneyCount', backref='Transaction', lazy=True)

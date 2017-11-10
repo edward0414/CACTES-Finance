@@ -71,8 +71,8 @@ def addTransaction():
             staff = request.form['staff']
             approved = request.form['approved']
             event = request.form['event']
-            income = int(request.form['income'])
-            expense = int(request.form['expense'])
+            income = float(request.form['income'])
+            expense = float(request.form['expense'])
 
 
             e_Count = {}
@@ -142,9 +142,9 @@ def addTransaction():
                 iSum = itotal
                 for i in range(numCheques):
                     if chequeType[i] == "Income":
-                        iSum += int(chequeAmount[i])
+                        iSum += float(chequeAmount[i])
                     elif chequeType[i] == "Expense":
-                        eSum += int(chequeAmount[i]) 
+                        eSum += float(chequeAmount[i]) 
 
                 if eSum != expense or iSum != income:
                     error= "Expense or income total does not match with the sum of coins and cheque(s)." + \
@@ -209,8 +209,8 @@ def modifyTransaction(transactionID):
             staff = request.form['staff']
             approved = request.form['approved']
             event = request.form['event']
-            income = int(request.form['income'])
-            expense = int(request.form['expense'])
+            income = float(request.form['income'])
+            expense = float(request.form['expense'])
 
             result = db.session.query(Transaction).filter_by(transaction_id=transID).first()
 
@@ -316,9 +316,9 @@ def modifyTransaction(transactionID):
                 iSum = itotal
                 for i in range(numCheques):
                     if chequeType[i] == "Income":
-                        iSum += int(chequeAmount[i])
+                        iSum += float(chequeAmount[i])
                     elif chequeType[i] == "Expense":
-                        eSum += int(chequeAmount[i]) 
+                        eSum += float(chequeAmount[i]) 
 
                 if eSum != expense or iSum != income:
                     error= "Expense or income total does not match with the sum of coins and cheque(s)."+ \
