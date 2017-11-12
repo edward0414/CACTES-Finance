@@ -334,9 +334,9 @@ function updateBalance() {
     etotal = etotal.toFixed(2);
     b = itotal-etotal;
     b = b.toFixed(2);
-    document.getElementById("iTotal").innerHTML = "$ " + itotal;
-    document.getElementById("eTotal").innerHTML = "$ " + etotal;
-    document.getElementById("balance").innerHTML = "$ " + b;
+    document.getElementById("iTotal").innerHTML = "$" + itotal;
+    document.getElementById("eTotal").innerHTML = "$" + etotal;
+    document.getElementById("balance").innerHTML = "$" + b;
     
     if (itotal-etotal <0) {
         $("#balance").css("backgroundColor", "#d9534f");
