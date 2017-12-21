@@ -50,7 +50,7 @@ def welcome():
         transactions = db.session.query(Transaction).all()
         session['notSeen'] = len(transactions) - session['seen']
     else:
-        transactions = db.session.query(Transaction).filter_by(transType=(district)).all()
+        transactions = db.session.query(Transaction).filter_by(trans_type=(district)).all()
         session['notSeen'] = len(transactions) - session['seen']
 
     db.session.close()
